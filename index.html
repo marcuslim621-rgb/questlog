@@ -186,7 +186,7 @@
 
   .sleep-corner { position: absolute; bottom: 0; left: -58px; width: 76px; height: 46px; transition: opacity 1.2s ease; opacity: var(--day-on); }
 
-  .duo { position: absolute; bottom: 118px; left: 28%; display: flex; align-items: flex-end; gap: 26px; }
+  .duo { position: absolute; bottom: 104px; left: 28%; display: flex; align-items: flex-end; gap: 26px; }
   .duo img { display: block; width: auto; transform-origin: 50% 100%; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.35)); }
 
   .char-wrap { position: relative; }
@@ -435,9 +435,12 @@
   #add-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
   #add-btn:disabled { opacity: 0.6; cursor: wait; }
 
-  .footer-note { margin: 12px 4px 0; text-align: center; font-size: 18px; line-height: 1.7; color: var(--faint); }
+  .below-add { display: flex; flex-direction: column; gap: 4px; }
 
-  .status-line { text-align: center; font-size: 16px; color: var(--faint); min-height: 20px; }
+  .footer-note { margin: 0 4px; text-align: center; font-size: 18px; line-height: 1.7; color: var(--faint); }
+
+  .status-line { text-align: center; font-size: 16px; color: var(--faint); min-height: 0; }
+  .status-line:empty { display: none; }
   .status-line.error { color: #ff8f7a; }
 
   .zoom-modal {
@@ -522,9 +525,10 @@
         </div>
       </div>
 
-      <p class="status-line" id="status-line"></p>
-
-      <p class="footer-note">Tap text, note or date to edit &middot; check a quest by uploading proof &middot; X abandons it &middot; click the <span id="sky-body-word">moon</span> to change the sky</p>
+      <div class="below-add">
+        <p class="status-line" id="status-line"></p>
+        <p class="footer-note">Tap text, note or date to edit &middot; check a quest by uploading proof &middot; X abandons it &middot; click the <span id="sky-body-word">moon</span> to change the sky</p>
+      </div>
     </div>
 
     <input type="file" accept="image/*" id="proof-input" style="display:none;">
