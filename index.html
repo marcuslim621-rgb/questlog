@@ -192,10 +192,10 @@
   .char-wrap { position: relative; }
   .char-wrap img { cursor: pointer; pointer-events: auto; }
   .char-flip { display: inline-block; transform: scaleX(-1); }
-  .char-wrap.boy img { height: 190px; animation: breathe 3.4s ease-in-out infinite; }
-  .char-wrap.girl img { height: 190px; animation: breathe 3.4s ease-in-out infinite; }
-  .char-wrap.boy.talking img { animation: breathe 3.4s ease-in-out infinite, charBounce 0.5s ease; }
-  .char-wrap.girl.talking img { animation: breathe 3.4s ease-in-out infinite, charBounce 0.5s ease; }
+  .char-wrap.boy img { height: 190px; animation: breathe 4.2s ease-in-out infinite; }
+  .char-wrap.girl img { height: 190px; animation: breathe 4.2s ease-in-out infinite; }
+  .char-wrap.boy.talking img { animation: breathe 4.2s ease-in-out infinite, charBounce 0.5s ease; }
+  .char-wrap.girl.talking img { animation: breathe 4.2s ease-in-out infinite, charBounce 0.5s ease; }
   @keyframes charBounce {
     0% { transform: translateY(0) scale(1, 1); }
     30% { transform: translateY(-16px) scale(0.96, 1.08); }
@@ -250,7 +250,7 @@
     transform: translateX(-50%) translateY(0) scale(1);
   }
   @media (prefers-reduced-motion: reduce) {
-    .char-wrap.boy.talking img, .char-wrap.girl.talking img { animation: breathe 3.4s ease-in-out infinite; }
+    .char-wrap.boy.talking img, .char-wrap.girl.talking img { animation: breathe 4.2s ease-in-out infinite; }
   }
 
   .cat { position: absolute; bottom: 124px; left: 14%; width: 58px; height: 52px; transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.2,1.5,0.4,1); opacity: var(--night-on); }
