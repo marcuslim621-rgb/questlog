@@ -74,7 +74,7 @@
     flex-direction: column;
     align-items: center;
     gap: 24px;
-    background: #12102a;
+    background: transparent;
   }
 
   .sky {
@@ -187,12 +187,14 @@
   .sleep-corner { position: absolute; bottom: 0; left: -58px; width: 76px; height: 46px; transition: opacity 1.2s ease; opacity: var(--day-on); }
 
   .duo { position: absolute; bottom: 118px; left: 28%; display: flex; align-items: flex-end; gap: 26px; }
-  .duo img { display: block; width: auto; transform-origin: 50% 100%; animation: breathe 3.4s ease-in-out infinite; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.35)); }
-  .duo img:last-child { height: 176px; animation-delay: 0.6s; animation-duration: 4.1s; }
+  .duo img { display: block; width: auto; transform-origin: 50% 100%; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.35)); }
 
   .char-wrap { position: relative; }
-  .char-wrap img { height: 190px; cursor: pointer; pointer-events: auto; }
-  .char-wrap.talking img { animation: breathe 3.4s ease-in-out infinite, charBounce 0.5s ease; }
+  .char-wrap img { cursor: pointer; pointer-events: auto; }
+  .char-wrap.boy img { height: 190px; animation: breathe 3.4s ease-in-out infinite; }
+  .char-wrap.girl img { height: 176px; animation: breathe 4.1s ease-in-out infinite 0.6s; }
+  .char-wrap.boy.talking img { animation: breathe 3.4s ease-in-out infinite, charBounce 0.5s ease; }
+  .char-wrap.girl.talking img { animation: breathe 4.1s ease-in-out infinite 0.6s, charBounce 0.5s ease; }
   @keyframes charBounce {
     0% { transform: translateY(0) scale(1, 1); }
     30% { transform: translateY(-16px) scale(0.96, 1.08); }
@@ -247,7 +249,8 @@
     transform: translateX(-50%) translateY(0) scale(1);
   }
   @media (prefers-reduced-motion: reduce) {
-    .char-wrap.talking img { animation: breathe 3.4s ease-in-out infinite; }
+    .char-wrap.boy.talking img { animation: breathe 3.4s ease-in-out infinite; }
+    .char-wrap.girl.talking img { animation: breathe 4.1s ease-in-out infinite 0.6s; }
   }
 
   .cat { position: absolute; bottom: 124px; left: 14%; width: 58px; height: 52px; transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.2,1.5,0.4,1); opacity: var(--night-on); }
@@ -590,11 +593,14 @@
       </div>
 
       <div class="duo">
-        <div class="char-wrap" id="char-boy">
+        <div class="char-wrap boy" id="char-boy">
           <div class="speech-bubble" id="boy-speech">Marcus</div>
           <img src="${SPRITE_1}" alt="Marcus">
         </div>
-        <img src="${SPRITE_2}" alt="">
+        <div class="char-wrap girl" id="char-girl">
+          <div class="speech-bubble" id="girl-speech">momo</div>
+          <img src="${SPRITE_2}" alt="momo">
+        </div>
       </div>
 
       <div class="cat">
@@ -607,17 +613,21 @@
 
     scene.innerHTML = html;
 
-    const charBoy = document.getElementById('char-boy');
-    const boySpeech = document.getElementById('boy-speech');
-    let speechTimer = null;
-    charBoy.addEventListener('click', () => {
-      charBoy.classList.remove('talking');
-      void charBoy.offsetWidth;
-      charBoy.classList.add('talking');
-      boySpeech.classList.add('show');
-      clearTimeout(speechTimer);
-      speechTimer = setTimeout(() => boySpeech.classList.remove('show'), 1800);
-    });
+    function makeTalker(wrapId, speechId) {
+      const wrap = document.getElementById(wrapId);
+      const speech = document.getElementById(speechId);
+      let timer = null;
+      wrap.addEventListener('click', () => {
+        wrap.classList.remove('talking');
+        void wrap.offsetWidth;
+        wrap.classList.add('talking');
+        speech.classList.add('show');
+        clearTimeout(timer);
+        timer = setTimeout(() => speech.classList.remove('show'), 1800);
+      });
+    }
+    makeTalker('char-boy', 'boy-speech');
+    makeTalker('char-girl', 'girl-speech');
   }
 
   // ---- state ----
