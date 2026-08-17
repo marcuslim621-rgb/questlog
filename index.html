@@ -191,8 +191,9 @@
 
   .char-wrap { position: relative; }
   .char-wrap img { cursor: pointer; pointer-events: auto; }
+  .char-flip { display: inline-block; transform: scaleX(-1); }
   .char-wrap.boy img { height: 190px; animation: breathe 3.4s ease-in-out infinite; }
-  .char-wrap.girl img { height: 176px; animation: breathe 4.1s ease-in-out infinite 0.6s; }
+  .char-wrap.girl img { height: 184px; animation: breathe 4.1s ease-in-out infinite 0.6s; }
   .char-wrap.boy.talking img { animation: breathe 3.4s ease-in-out infinite, charBounce 0.5s ease; }
   .char-wrap.girl.talking img { animation: breathe 4.1s ease-in-out infinite 0.6s, charBounce 0.5s ease; }
   @keyframes charBounce {
@@ -641,7 +642,7 @@
       <div class="duo">
         <div class="char-wrap boy" id="char-boy">
           <div class="speech-bubble" id="boy-speech">Marcus</div>
-          <img src="${SPRITE_1}" alt="Marcus">
+          <div class="char-flip"><img src="${SPRITE_1}" alt="Marcus"></div>
         </div>
         <div class="char-wrap girl" id="char-girl">
           <div class="speech-bubble" id="girl-speech">Momo</div>
