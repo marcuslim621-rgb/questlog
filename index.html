@@ -276,6 +276,46 @@
   h1 { margin: 14px 0 0; font-family: 'Press Start 2P', monospace; font-size: 30px; line-height: 1.45; color: var(--gold); text-shadow: 4px 4px 0 var(--title-shadow); text-wrap: balance; text-align: center; }
   .subtitle { margin: 16px 0 0; font-size: 22px; color: var(--muted); text-align: center; }
 
+  .search-wrap {
+    position: relative;
+    margin: 4px 6px 0;
+    display: flex;
+    align-items: center;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    font-size: 16px;
+    color: var(--dim);
+    pointer-events: none;
+  }
+  #search-input {
+    width: 100%;
+    padding: 12px 38px;
+    border: none;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    background: var(--input-bg);
+    color: var(--ink);
+    box-shadow: 0 0 0 3px var(--border-soft);
+  }
+  #search-input::placeholder { color: var(--faint); }
+  #search-input:focus { outline: none; box-shadow: 0 0 0 3px #ffd23f; }
+  #search-clear {
+    position: absolute;
+    right: 10px;
+    width: 22px; height: 22px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: var(--faint);
+    font-size: 20px;
+    line-height: 1;
+  }
+  #search-clear:hover { color: var(--gold); }
+  #search-clear:focus-visible, #search-input:focus-visible { outline: 2px solid var(--gold); }
+
   .panel {
     position: relative; margin: 4px 6px 0; padding: 18px 20px;
     background: var(--panel);
@@ -436,6 +476,12 @@
         <p class="subtitle">A shared adventure, one deed at a time</p>
       </div>
 
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">&#9906;</span>
+        <input type="text" id="search-input" placeholder="Search quests&hellip;" aria-label="Search quests">
+        <button type="button" id="search-clear" title="Clear search" style="display:none;">&times;</button>
+      </div>
+
       <div class="panel">
         <div class="xp-col">
           <div class="xp-row">
@@ -463,8 +509,8 @@
       <ul id="quest-list"></ul>
 
       <div class="empty-state" id="empty-state" style="display:none;">
-        <div class="empty-title">NO QUESTS ON THE BOARD</div>
-        <div class="empty-sub">Add your first one below to begin.</div>
+        <div class="empty-title" id="empty-title">NO QUESTS ON THE BOARD</div>
+        <div class="empty-sub" id="empty-sub">Add your first one below to begin.</div>
       </div>
 
       <div class="add-panel">
@@ -635,9 +681,12 @@
   let day = false;
   let pendingId = null;
   let loading = true;
+  let searchTerm = '';
 
   const listEl = document.getElementById('quest-list');
   const emptyState = document.getElementById('empty-state');
+  const emptyTitle = document.getElementById('empty-title');
+  const emptySub = document.getElementById('empty-sub');
   const newItemInput = document.getElementById('new-item');
   const newDateInput = document.getElementById('new-date');
   const addBtn = document.getElementById('add-btn');
@@ -646,6 +695,8 @@
   const moonBtn = document.getElementById('moon-btn');
   const sunBtn = document.getElementById('sun-btn');
   const skyBodyWord = document.getElementById('sky-body-word');
+  const searchInput = document.getElementById('search-input');
+  const searchClear = document.getElementById('search-clear');
 
   function setStatus(msg, isError) {
     statusLine.textContent = msg || '';
@@ -745,8 +796,26 @@
   }
 
   // ---- rendering ----
+  function matchesSearch(item) {
+    if (!searchTerm) return true;
+    const q = searchTerm.toLowerCase();
+    return item.text.toLowerCase().includes(q) || (item.note || '').toLowerCase().includes(q);
+  }
+
   function render() {
-    emptyState.style.display = (!loading && items.length === 0) ? 'block' : 'none';
+    const visible = items.filter(matchesSearch);
+
+    const showEmpty = !loading && visible.length === 0;
+    emptyState.style.display = showEmpty ? 'block' : 'none';
+    if (showEmpty) {
+      if (searchTerm) {
+        emptyTitle.textContent = 'NO QUESTS MATCH';
+        emptySub.textContent = 'Try a different search term.';
+      } else {
+        emptyTitle.textContent = 'NO QUESTS ON THE BOARD';
+        emptySub.textContent = 'Add your first one below to begin.';
+      }
+    }
     listEl.innerHTML = '';
 
     const done = items.filter(i => i.done).length;
@@ -762,7 +831,7 @@
     document.getElementById('done-count').textContent = done;
     document.getElementById('open-count').textContent = open;
 
-    items.forEach(item => {
+    visible.forEach(item => {
       const li = document.createElement('li');
       li.className = 'quest-card';
 
@@ -918,6 +987,19 @@
   newItemInput.addEventListener('keydown', e => { if (e.key === 'Enter') onAdd(); });
   moonBtn.addEventListener('click', toggleSky);
   sunBtn.addEventListener('click', toggleSky);
+
+  searchInput.addEventListener('input', () => {
+    searchTerm = searchInput.value.trim();
+    searchClear.style.display = searchTerm ? 'block' : 'none';
+    render();
+  });
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchTerm = '';
+    searchClear.style.display = 'none';
+    render();
+    searchInput.focus();
+  });
 
   // ---- init ----
   try {
