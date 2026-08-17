@@ -188,8 +188,67 @@
 
   .duo { position: absolute; bottom: 118px; left: 28%; display: flex; align-items: flex-end; gap: 26px; }
   .duo img { display: block; width: auto; transform-origin: 50% 100%; animation: breathe 3.4s ease-in-out infinite; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.35)); }
-  .duo img:first-child { height: 190px; }
   .duo img:last-child { height: 176px; animation-delay: 0.6s; animation-duration: 4.1s; }
+
+  .char-wrap { position: relative; }
+  .char-wrap img { height: 190px; cursor: pointer; pointer-events: auto; }
+  .char-wrap.talking img { animation: breathe 3.4s ease-in-out infinite, charBounce 0.5s ease; }
+  @keyframes charBounce {
+    0% { transform: translateY(0) scale(1, 1); }
+    30% { transform: translateY(-16px) scale(0.96, 1.08); }
+    55% { transform: translateY(0) scale(1.06, 0.94); }
+    75% { transform: translateY(-6px) scale(0.98, 1.03); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+
+  .speech-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px) scale(0.85);
+    margin-bottom: 14px;
+    padding: 8px 14px;
+    background: #fffaee;
+    color: #3b2a17;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 -3px 0 #3b2a17, 0 3px 0 #3b2a17, -3px 0 0 #3b2a17, 3px 0 0 #3b2a17, 4px 4px 0 rgba(0,0,0,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 3;
+  }
+  .speech-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid #3b2a17;
+  }
+  .speech-bubble::before {
+    content: "";
+    position: absolute;
+    top: calc(100% - 3px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #fffaee;
+    z-index: 1;
+  }
+  .speech-bubble.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .char-wrap.talking img { animation: breathe 3.4s ease-in-out infinite; }
+  }
 
   .cat { position: absolute; bottom: 124px; left: 14%; width: 58px; height: 52px; transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.2,1.5,0.4,1); opacity: var(--night-on); }
   .cat-tail { position: absolute; bottom: 4px; left: 34px; width: 8px; height: 30px; transform-origin: 50% 100%; animation: wag 2.6s ease-in-out infinite; background: #2a2438; }
@@ -531,7 +590,10 @@
       </div>
 
       <div class="duo">
-        <img src="${SPRITE_1}" alt="">
+        <div class="char-wrap" id="char-boy">
+          <div class="speech-bubble" id="boy-speech">Marcus</div>
+          <img src="${SPRITE_1}" alt="Marcus">
+        </div>
         <img src="${SPRITE_2}" alt="">
       </div>
 
@@ -544,6 +606,18 @@
       </div>`;
 
     scene.innerHTML = html;
+
+    const charBoy = document.getElementById('char-boy');
+    const boySpeech = document.getElementById('boy-speech');
+    let speechTimer = null;
+    charBoy.addEventListener('click', () => {
+      charBoy.classList.remove('talking');
+      void charBoy.offsetWidth;
+      charBoy.classList.add('talking');
+      boySpeech.classList.add('show');
+      clearTimeout(speechTimer);
+      speechTimer = setTimeout(() => boySpeech.classList.remove('show'), 1800);
+    });
   }
 
   // ---- state ----
