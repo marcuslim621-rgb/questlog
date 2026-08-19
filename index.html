@@ -225,13 +225,24 @@
   .char-wrap.boy.talking img { animation: breathe 4.2s ease-in-out infinite, charBounce 0.5s ease; }
   .char-wrap.girl.talking img { animation: breathe 4.2s ease-in-out infinite, charBounce 0.5s ease; }
 
-  .outfit-btns { display: flex; justify-content: center; gap: 10px; margin-top: 2px; pointer-events: auto; }
-  .outfit-btns button {
-    background: none; border: none; cursor: pointer; padding: 2px 6px; line-height: 1;
-    font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--gold);
-    opacity: 0.6; transition: opacity 0.2s;
+  .outfit-btns {
+    position: absolute; left: 0; right: 0; top: 100%; margin-top: 6px;
+    display: flex; justify-content: center; gap: 18px; pointer-events: auto;
   }
-  .outfit-btns button:hover { opacity: 1; }
+  .outfit-btns button {
+    position: relative; width: 32px; height: 32px;
+    background: none; border: none; cursor: pointer; padding: 0;
+    opacity: 0.85; transition: opacity 0.2s;
+  }
+  .outfit-btns button:hover, .outfit-btns button:active { opacity: 1; }
+  .outfit-btns button::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 0; height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+  #momo-prev::before { border-right: 10px solid var(--gold); transform: translate(-45%, -50%); }
+  #momo-next::before { border-left: 10px solid var(--gold); transform: translate(-55%, -50%); }
   @keyframes charBounce {
     0% { transform: translateY(0) scale(1, 1); }
     30% { transform: translateY(-16px) scale(0.96, 1.08); }
@@ -758,8 +769,8 @@
           <div class="speech-bubble" id="girl-speech">Momo</div>
           <img id="momo-img" src="${SPRITE_2}" alt="Momo">
           <div class="outfit-btns">
-            <button type="button" id="momo-prev" aria-label="Previous outfit">◀</button>
-            <button type="button" id="momo-next" aria-label="Next outfit">▶</button>
+            <button type="button" id="momo-prev" aria-label="Previous outfit"></button>
+            <button type="button" id="momo-next" aria-label="Next outfit"></button>
           </div>
         </div>
       </div>
