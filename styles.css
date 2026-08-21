@@ -211,7 +211,7 @@
   .char-wrap { position: relative; }
   .char-wrap img { cursor: pointer; pointer-events: auto; }
   .char-flip { display: inline-block; vertical-align: bottom; transform: scaleX(-1); }
-  .char-wrap.boy img { height: 228px; animation: breathe 4.2s ease-in-out infinite; }
+  .char-wrap.boy img { height: 246px; animation: breathe 4.2s ease-in-out infinite; }
   .char-wrap.girl { width: 156px; }
   .char-wrap.girl img { height: 228px; margin: 0 auto; animation: breathe 4.2s ease-in-out infinite; }
   .char-wrap.boy.talking img { animation: breathe 4.2s ease-in-out infinite, charBounce 0.5s ease; }
