@@ -60,17 +60,7 @@
             <div class="xp-ticks"></div>
           </div>
         </div>
-        <div class="stat-row">
-          <div>
-            <div class="stat-num green" id="done-count">0</div>
-            <div class="stat-label">CLEARED</div>
-          </div>
-          <div class="stat-div"></div>
-          <div>
-            <div class="stat-num gold" id="open-count">0</div>
-            <div class="stat-label">ACTIVE</div>
-          </div>
-        </div>
+
         <div class="bond-stats">
           <div class="bond-stat bond-adventure">
             <img class="bond-stat-icon" src="assets/icons/adventure.png" alt="">
@@ -96,8 +86,8 @@
       </div>
 
       <div class="tabs" id="tabs">
-        <button type="button" class="tab-btn active" id="tab-active" data-tab="active">ACTIVE</button>
-        <button type="button" class="tab-btn" id="tab-completed" data-tab="completed">COMPLETED</button>
+        <button type="button" class="tab-btn active" id="tab-active" data-tab="active">ACTIVE <span class="tab-count" id="open-count">0</span></button>
+        <button type="button" class="tab-btn" id="tab-completed" data-tab="completed">COMPLETED <span class="tab-count" id="done-count">0</span></button>
       </div>
 
       <ul id="quest-list"></ul>

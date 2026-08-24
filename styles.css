@@ -457,6 +457,13 @@
   }
   .tab-btn:hover:not(.active) { color: var(--muted); }
   .tab-btn:focus-visible { outline: 2px solid var(--gold); }
+  .tab-count {
+    display: inline-block; margin-left: 6px;
+    background: var(--outer); color: var(--muted);
+    font-size: 8px; padding: 2px 5px;
+    border-radius: 3px; vertical-align: middle;
+  }
+  .tab-btn.active .tab-count { background: var(--gold); color: var(--outer); }
 
   #quest-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
   .quest-card {
