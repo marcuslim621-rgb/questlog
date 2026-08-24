@@ -385,6 +385,12 @@
     return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
+  function formatShortDate(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y.slice(2)}`;
+  }
+
   // ---- data layer ----
   async function loadItems() {
     const { data, error } = await supabase
@@ -406,7 +412,8 @@
       completedDate: row.completed_date || '',
       note: row.note || '',
       image: row.image_url || '',
-      category: row.category || ''
+      category: row.category || '',
+      createdAt: row.created_at ? row.created_at.slice(0, 10) : ''
     };
   }
 
@@ -526,17 +533,29 @@
 
     visible.forEach(item => {
       const li = document.createElement('li');
-      li.className = 'quest-card';
+      li.className = 'quest-card' + (item.id === pendingId ? ' pending' : '');
 
-      const check = document.createElement('button');
-      check.type = 'button';
-      check.className = 'check-btn' + (item.id === pendingId ? ' pending' : '');
-      check.title = item.done ? 'Clear this completion' : 'Upload proof to clear this quest';
-      check.textContent = item.done ? '✓' : '';
-      check.addEventListener('click', () => onToggle(item));
+      // ---- photo box: placeholder until proof is uploaded, then the proof itself ----
+      const photoBox = document.createElement('div');
+      photoBox.className = 'photo-box' + (item.done && item.image ? ' has-photo' : '');
+      if (item.done && item.image) {
+        const thumb = document.createElement('img');
+        thumb.src = item.image;
+        thumb.alt = 'Proof';
+        photoBox.appendChild(thumb);
+        photoBox.title = 'View full size';
+        photoBox.addEventListener('click', () => openZoom(item.image));
+      } else {
+        photoBox.title = 'Upload proof to clear this quest';
+        photoBox.addEventListener('click', () => onToggle(item));
+      }
 
-      const main = document.createElement('div');
-      main.className = 'item-main';
+      // ---- card body ----
+      const body = document.createElement('div');
+      body.className = 'card-body';
+
+      const top = document.createElement('div');
+      top.className = 'card-top';
 
       const text = document.createElement('div');
       text.className = 'item-text' + (item.done ? ' done' : '');
@@ -549,18 +568,60 @@
       });
       text.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); text.blur(); } });
 
-      const dueRow = document.createElement('div');
-      dueRow.className = 'due-row';
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-btn';
+      removeBtn.title = 'Abandon quest';
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => removeItem(item.id));
+
+      top.appendChild(text);
+      top.appendChild(removeBtn);
+
+      // ---- one meta line: logged/cleared date · due date · category ----
+      const meta = document.createElement('div');
+      meta.className = 'meta-line';
+
+      const dot = document.createElement('span');
+      dot.className = 'meta-dot';
+      meta.appendChild(dot);
+
+      if (item.done) {
+        const clearedDate = document.createElement('input');
+        clearedDate.type = 'date';
+        clearedDate.className = 'meta-date-input';
+        clearedDate.value = item.completedDate || '';
+        clearedDate.title = 'Cleared on';
+        clearedDate.addEventListener('change', () => updateItem(item.id, { completedDate: clearedDate.value }));
+        meta.appendChild(clearedDate);
+      } else {
+        const loggedDate = document.createElement('span');
+        loggedDate.className = 'meta-static';
+        loggedDate.textContent = formatShortDate(item.createdAt);
+        meta.appendChild(loggedDate);
+      }
+
+      const sep1 = document.createElement('span');
+      sep1.className = 'meta-sep';
+      sep1.textContent = '/';
+      meta.appendChild(sep1);
+
       const dueLabel = document.createElement('span');
-      dueLabel.className = 'due-label';
+      dueLabel.className = 'meta-static';
       dueLabel.textContent = 'DUE';
+      meta.appendChild(dueLabel);
+
       const dateInput = document.createElement('input');
       dateInput.type = 'date';
-      dateInput.className = 'date-input';
+      dateInput.className = 'meta-date-input';
       dateInput.value = item.date || '';
       dateInput.addEventListener('change', () => updateItem(item.id, { date: dateInput.value }));
-      dueRow.appendChild(dueLabel);
-      dueRow.appendChild(dateInput);
+      meta.appendChild(dateInput);
+
+      const sep2 = document.createElement('span');
+      sep2.className = 'meta-sep';
+      sep2.textContent = '/';
+      meta.appendChild(sep2);
 
       const catSelect = document.createElement('select');
       catSelect.className = 'category-select' + (item.category ? ' set-' + item.category : '');
@@ -580,44 +641,18 @@
         catSelect.className = 'category-select' + (catSelect.value ? ' set-' + catSelect.value : '');
         updateItem(item.id, { category: catSelect.value });
       });
-      dueRow.appendChild(catSelect);
+      meta.appendChild(catSelect);
 
-      main.appendChild(text);
-      main.appendChild(dueRow);
-
-      if (item.done && item.image) {
-        const proofRow = document.createElement('div');
-        proofRow.className = 'proof-row';
-
-        const thumbWrap = document.createElement('div');
-        thumbWrap.className = 'proof-thumb-wrap';
-        const thumb = document.createElement('img');
-        thumb.src = item.image;
-        thumb.alt = 'Proof';
-        thumb.title = 'View full size';
-        thumb.addEventListener('click', () => openZoom(item.image));
-        thumbWrap.appendChild(thumb);
-
-        const proofCol = document.createElement('div');
-        proofCol.className = 'proof-col';
-        const clearedLabel = document.createElement('span');
-        clearedLabel.className = 'cleared-label';
-        clearedLabel.textContent = '★ CLEARED ON';
-        const clearedDate = document.createElement('input');
-        clearedDate.type = 'date';
-        clearedDate.className = 'cleared-date';
-        clearedDate.value = item.completedDate || '';
-        clearedDate.addEventListener('change', () => updateItem(item.id, { completedDate: clearedDate.value }));
-        proofCol.appendChild(clearedLabel);
-        proofCol.appendChild(clearedDate);
-
-        proofRow.appendChild(thumbWrap);
-        proofRow.appendChild(proofCol);
-        main.appendChild(proofRow);
+      if (item.done) {
+        const undoBtn = document.createElement('button');
+        undoBtn.type = 'button';
+        undoBtn.className = 'undo-btn';
+        undoBtn.textContent = 'undo';
+        undoBtn.title = 'Abandon this clear';
+        undoBtn.addEventListener('click', () => onToggle(item));
+        meta.appendChild(undoBtn);
       }
 
-      const noteWrap = document.createElement('div');
-      noteWrap.className = 'item-note';
       const noteText = document.createElement('div');
       noteText.className = 'note-text';
       noteText.contentEditable = 'true';
@@ -632,20 +667,18 @@
       placeholder.className = 'note-placeholder';
       placeholder.textContent = 'add a note…';
       placeholder.style.display = item.note ? 'none' : 'block';
+
+      const noteWrap = document.createElement('div');
+      noteWrap.className = 'item-note';
       noteWrap.appendChild(noteText);
       noteWrap.appendChild(placeholder);
 
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'remove-btn';
-      removeBtn.title = 'Abandon quest';
-      removeBtn.textContent = 'X';
-      removeBtn.addEventListener('click', () => removeItem(item.id));
+      body.appendChild(top);
+      body.appendChild(meta);
+      body.appendChild(noteWrap);
 
-      li.appendChild(check);
-      li.appendChild(main);
-      li.appendChild(noteWrap);
-      li.appendChild(removeBtn);
+      li.appendChild(photoBox);
+      li.appendChild(body);
       listEl.appendChild(li);
     });
   }
