@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.0';
+  const APP_VERSION = '6.1';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -124,6 +124,10 @@
   const SPRITE_2_B = 'assets/characters/sprite-2-b.png';
   const SPRITE_3 = 'assets/characters/sprite-3.png';
   const SPRITE_4 = 'assets/characters/sprite-4.png';
+  const SPRITE_2_CMF_ACOLYTE = 'assets/characters/Momo_Comfort1.png';
+  const SPRITE_2_CMF_CLERIC = 'assets/characters/Momo_Comfort2.png';
+  const SPRITE_2_CMF_PRIEST = 'assets/characters/Momo_Comfort3.png';
+  const SPRITE_2_CMF_SAGE = 'assets/characters/Momo_Comfort4.png';
 
   const FLOWERS = [
     { left: '6%', color: '#e8657f', delay: '0.15s' }, { left: '13%', color: '#f2b13c', delay: '0.5s' },
@@ -431,7 +435,7 @@
   }
 
   function outfitAllowed(character, idx) {
-    const req = (character === 'marcus' ? MARCUS_OUTFIT_REQUIREMENTS : {})[idx];
+    const req = (character === 'marcus' ? MARCUS_OUTFIT_REQUIREMENTS : MOMO_OUTFIT_REQUIREMENTS)[idx];
     if (!req || secretOutfitsUnlocked) return true;
     const { stats } = characterStats(character);
     return unlockedTitles(stats).some(u => u.category === req.category && u.title === req.title);
@@ -1042,7 +1046,7 @@
     outfitHeader.textContent = 'OUTFIT';
     outfitSection.appendChild(outfitHeader);
 
-    const outfitReqs = character === 'marcus' ? MARCUS_OUTFIT_REQUIREMENTS : {};
+    const outfitReqs = character === 'marcus' ? MARCUS_OUTFIT_REQUIREMENTS : MOMO_OUTFIT_REQUIREMENTS;
 
     const outfitGrid = document.createElement('div');
     outfitGrid.className = 'outfit-grid';
@@ -1137,7 +1141,17 @@
   buildScene();
 
   // ---- outfit switcher ----
-  const MOMO_OUTFITS = [SPRITE_2, SPRITE_2_B, SPRITE_3, SPRITE_4];
+  const MOMO_OUTFITS = [
+    SPRITE_2, SPRITE_2_B, SPRITE_3, SPRITE_4,
+    SPRITE_2_CMF_ACOLYTE, SPRITE_2_CMF_CLERIC, SPRITE_2_CMF_PRIEST, SPRITE_2_CMF_SAGE
+  ];
+  // Each comfort outfit appears only once its matching class title is earned.
+  const MOMO_OUTFIT_REQUIREMENTS = {
+    4: { category: 'comfort', title: 'Acolyte' },
+    5: { category: 'comfort', title: 'Cleric' },
+    6: { category: 'comfort', title: 'Priest' },
+    7: { category: 'comfort', title: 'Sage' }
+  };
   const MOMO_OUTFIT_KEY = 'questlog.momoOutfit';
   let momoOutfitIdx = 0;
   try {
