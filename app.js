@@ -111,6 +111,7 @@
   const SPRITE_1_B = 'assets/characters/sprite-1-b.png';
   const SPRITE_1_C = 'assets/characters/sprite-1-c.png';
   const SPRITE_1_D = 'assets/characters/sprite-1-d.png';
+  const SPRITE_1_ADV_KNIGHT = 'assets/characters/Marcus_Adventure2.png';
   const SPRITE_2 = 'assets/characters/sprite-2.png';
   const SPRITE_2_B = 'assets/characters/sprite-2-b.png';
   const SPRITE_3 = 'assets/characters/sprite-3.png';
@@ -922,9 +923,13 @@
     outfitHeader.textContent = 'OUTFIT';
     outfitSection.appendChild(outfitHeader);
 
+    const outfitReqs = character === 'marcus' ? MARCUS_OUTFIT_REQUIREMENTS : {};
+
     const outfitGrid = document.createElement('div');
     outfitGrid.className = 'outfit-grid';
     outfits.forEach((src, i) => {
+      const req = outfitReqs[i];
+      if (req && !unlocked.some(u => u.category === req.category && u.title === req.title)) return;
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'outfit-chip' + (i === currentIdx ? ' selected' : '');
@@ -1031,7 +1036,9 @@
   if (momoImg) momoImg.src = MOMO_OUTFITS[momoOutfitIdx];
 
   // Marcus outfits: add more sprite constants above and list them here as they're added
-  const MARCUS_OUTFITS = [SPRITE_1, SPRITE_1_B, SPRITE_1_C, SPRITE_1_D];
+  const MARCUS_OUTFITS = [SPRITE_1, SPRITE_1_B, SPRITE_1_C, SPRITE_1_D, SPRITE_1_ADV_KNIGHT];
+  // Outfits gated behind a class title: only shown in the picker once that title is unlocked
+  const MARCUS_OUTFIT_REQUIREMENTS = { 4: { category: 'adventure', title: 'Knight' } };
   const MARCUS_OUTFIT_KEY = 'questlog.marcusOutfit';
   let marcusOutfitIdx = 0;
   try {
