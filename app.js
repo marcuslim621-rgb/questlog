@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.3';
+  const APP_VERSION = '6.4';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -119,7 +119,7 @@
   function renderNameplates() {
     Object.keys(CHARACTERS).forEach(character => {
       const label = document.getElementById(character + '-title-label');
-      if (label) label.textContent = characterTitles[character] || 'Unranked';
+      if (label) label.textContent = characterTitles[character] || 'Beginner';
     });
   }
 
@@ -266,7 +266,7 @@
           <div class="char-flip"><img id="marcus-img" src="${SPRITE_1}" alt="Marcus"></div>
           <button type="button" class="char-nameplate" id="marcus-nameplate">
             <span class="char-name">Marcus</span>
-            <span class="char-title" id="marcus-title-label">Unranked</span>
+            <span class="char-title" id="marcus-title-label">Beginner</span>
           </button>
         </div>
         <div class="char-wrap girl" id="char-girl">
@@ -274,7 +274,7 @@
           <img id="momo-img" src="${SPRITE_2}" alt="Momo">
           <button type="button" class="char-nameplate" id="momo-nameplate">
             <span class="char-name">Momo</span>
-            <span class="char-title" id="momo-title-label">Unranked</span>
+            <span class="char-title" id="momo-title-label">Beginner</span>
           </button>
         </div>
       </div>
