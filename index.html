@@ -72,6 +72,24 @@
             <div class="stat-label">ACTIVE</div>
           </div>
         </div>
+        <div class="bond-stats">
+          <div class="bond-stat bond-adventure">
+            <div class="bond-stat-num" id="cat-count-adventure">0</div>
+            <div class="bond-stat-label">ADVENTURE</div>
+          </div>
+          <div class="bond-stat bond-comfort">
+            <div class="bond-stat-num" id="cat-count-comfort">0</div>
+            <div class="bond-stat-label">COMFORT</div>
+          </div>
+          <div class="bond-stat bond-communication">
+            <div class="bond-stat-num" id="cat-count-communication">0</div>
+            <div class="bond-stat-label">COMMS</div>
+          </div>
+          <div class="bond-stat bond-playfulness">
+            <div class="bond-stat-num" id="cat-count-playfulness">0</div>
+            <div class="bond-stat-label">PLAYFUL</div>
+          </div>
+        </div>
       </div>
 
       <div class="tabs" id="tabs">
@@ -91,6 +109,13 @@
         <div class="add-row">
           <input type="text" id="new-item" maxlength="200" placeholder="Sunset picnic at the pier&hellip;">
           <input type="date" id="new-date">
+          <select id="new-category" title="Which closeness stat this quest builds">
+            <option value="">&mdash; stat &mdash;</option>
+            <option value="adventure">Adventure</option>
+            <option value="comfort">Comfort</option>
+            <option value="communication">Communication</option>
+            <option value="playfulness">Playfulness</option>
+          </select>
           <button type="button" id="add-btn">ACCEPT</button>
         </div>
       </div>

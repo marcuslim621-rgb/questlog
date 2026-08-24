@@ -6,8 +6,31 @@
   const BUCKET = 'quest-photos';
 
   const SKY_KEY = 'datingPlanScroll.sky.v1';
-  const XP_PER_QUEST = 50;
-  const XP_PER_LEVEL = 200;
+
+  // Level = total completed quests. No XP math — the count IS the level.
+  const TIERS = [
+    { name: 'Strangers on a Quest', min: 0, max: 5 },
+    { name: 'Companions', min: 6, max: 15 },
+    { name: 'Trusted Allies', min: 16, max: 30 },
+    { name: 'Partners in Crime', min: 31, max: 50 },
+    { name: 'Soulbound', min: 51, max: 75 },
+    { name: 'Eternal Duo', min: 76, max: Infinity }
+  ];
+
+  function tierForLevel(level) {
+    return TIERS.find(t => level >= t.min && level <= t.max) || TIERS[TIERS.length - 1];
+  }
+  function tierIndex(level) {
+    return TIERS.findIndex(t => level >= t.min && level <= t.max);
+  }
+
+  const CATEGORIES = {
+    adventure: { label: 'Adventure', short: 'ADV', color: '#f2b13c' },
+    comfort: { label: 'Comfort', short: 'CMF', color: '#8de08a' },
+    communication: { label: 'Communication', short: 'COM', color: '#7ec8e3' },
+    playfulness: { label: 'Playfulness', short: 'PLY', color: '#d95e9c' }
+  };
+  const CATEGORY_KEYS = Object.keys(CATEGORIES);
 
   const SPRITE_1 = 'assets/characters/sprite-1.png';
   const SPRITE_1_B = 'assets/characters/sprite-1-b.png';
@@ -112,6 +135,8 @@
     let html = '';
 
     html += `<div class="ground-img"></div>`;
+    html += `<div class="bond-path" id="bond-path"></div>`;
+    html += `<div class="garden" id="garden"></div>`;
 
     TREES_BACK.forEach(t => {
       html += `<div class="img-tree img-tree-back" style="left:${t.left};bottom:126px;${spriteBox(t.kind, t.h)};animation-duration:${t.dur};animation-delay:${t.delay};"></div>`;
@@ -176,6 +201,34 @@
     }
     makeTalker('char-boy', 'boy-speech');
     makeTalker('char-girl', 'girl-speech');
+  }
+
+  // Bond scene: the shared garden/path grows a little with every tier reached.
+  // Placeholder blocks for now — swap in real pixel-art frames per tier later.
+  function updateSceneTier(tIdx) {
+    const scene = document.getElementById('scene');
+    if (scene) scene.dataset.tier = String(tIdx);
+
+    const path = document.getElementById('bond-path');
+    if (path) {
+      const pct = Math.min(100, Math.round((tIdx / (TIERS.length - 1)) * 100));
+      path.style.width = pct + '%';
+    }
+
+    const garden = document.getElementById('garden');
+    if (garden) {
+      const count = tIdx * 3;
+      if (garden.dataset.count !== String(count)) {
+        garden.dataset.count = String(count);
+        let html = '';
+        for (let i = 0; i < count; i++) {
+          const f = FLOWERS[i % FLOWERS.length];
+          const left = (4 + (i * 92) / Math.max(count, 1)) + '%';
+          html += `<div class="garden-flower" style="left:${left};background:${f.color};animation-delay:${f.delay};"></div>`;
+        }
+        garden.innerHTML = html;
+      }
+    }
   }
 
   // ---- animated cat (scene-standalone sprite set) ----
@@ -293,6 +346,7 @@
   const emptySub = document.getElementById('empty-sub');
   const newItemInput = document.getElementById('new-item');
   const newDateInput = document.getElementById('new-date');
+  const newCategoryInput = document.getElementById('new-category');
   const addBtn = document.getElementById('add-btn');
   const proofInput = document.getElementById('proof-input');
   const statusLine = document.getElementById('status-line');
@@ -351,14 +405,15 @@
       done: row.done,
       completedDate: row.completed_date || '',
       note: row.note || '',
-      image: row.image_url || ''
+      image: row.image_url || '',
+      category: row.category || ''
     };
   }
 
-  async function insertItem(text, date) {
+  async function insertItem(text, date, category) {
     const { data, error } = await supabase
       .from('quests')
-      .insert({ text, target_date: date || null })
+      .insert({ text, target_date: date || null, category: category || null })
       .select()
       .single();
     if (error) { setStatus('Could not add that quest: ' + error.message, true); return; }
@@ -374,6 +429,7 @@
     if ('completedDate' in changes) dbChanges.completed_date = changes.completedDate || null;
     if ('note' in changes) dbChanges.note = changes.note;
     if ('image' in changes) dbChanges.image_url = changes.image || null;
+    if ('category' in changes) dbChanges.category = changes.category || null;
 
     const item = items.find(i => i.id === id);
     if (item) Object.assign(item, changes);
@@ -442,18 +498,31 @@
     }
     listEl.innerHTML = '';
 
-    const done = items.filter(i => i.done).length;
+    const doneItems = items.filter(i => i.done);
+    const done = doneItems.length;
     const open = items.length - done;
-    const xpTotal = done * XP_PER_QUEST;
-    const intoLevel = xpTotal % XP_PER_LEVEL;
-    const level = Math.floor(xpTotal / XP_PER_LEVEL) + 1;
-    const barWidth = Math.round((intoLevel / XP_PER_LEVEL) * 100) + '%';
+    const level = done;
+    const tier = tierForLevel(level);
+    const tIdx = tierIndex(level);
+    const isMaxTier = tier.max === Infinity;
+    const tierSize = tier.max - tier.min + 1;
+    const intoTier = level - tier.min;
+    const barWidth = isMaxTier ? '100%' : Math.round((intoTier / tierSize) * 100) + '%';
 
-    document.getElementById('level-label').textContent = `LV ${level}  ·  QUEST XP`;
-    document.getElementById('xp-label').textContent = `${intoLevel} / ${XP_PER_LEVEL}`;
+    document.getElementById('level-label').textContent = `LV ${level}  ·  ${tier.name.toUpperCase()}`;
+    document.getElementById('xp-label').textContent = isMaxTier
+      ? 'MAX BOND'
+      : `${intoTier} / ${tierSize} TO ${TIERS[tIdx + 1].name.toUpperCase()}`;
     document.getElementById('xp-fill').style.width = barWidth;
     document.getElementById('done-count').textContent = done;
     document.getElementById('open-count').textContent = open;
+
+    CATEGORY_KEYS.forEach(key => {
+      const el = document.getElementById('cat-count-' + key);
+      if (el) el.textContent = doneItems.filter(i => i.category === key).length;
+    });
+
+    updateSceneTier(tIdx);
 
     visible.forEach(item => {
       const li = document.createElement('li');
@@ -492,6 +561,26 @@
       dateInput.addEventListener('change', () => updateItem(item.id, { date: dateInput.value }));
       dueRow.appendChild(dueLabel);
       dueRow.appendChild(dateInput);
+
+      const catSelect = document.createElement('select');
+      catSelect.className = 'category-select' + (item.category ? ' set-' + item.category : '');
+      catSelect.title = 'Which closeness stat this quest builds';
+      const blankOpt = document.createElement('option');
+      blankOpt.value = '';
+      blankOpt.textContent = '— stat —';
+      catSelect.appendChild(blankOpt);
+      CATEGORY_KEYS.forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = CATEGORIES[key].label;
+        if (item.category === key) opt.selected = true;
+        catSelect.appendChild(opt);
+      });
+      catSelect.addEventListener('change', () => {
+        catSelect.className = 'category-select' + (catSelect.value ? ' set-' + catSelect.value : '');
+        updateItem(item.id, { category: catSelect.value });
+      });
+      dueRow.appendChild(catSelect);
 
       main.appendChild(text);
       main.appendChild(dueRow);
@@ -604,9 +693,10 @@
     const text = newItemInput.value.trim();
     if (!text) { newItemInput.focus(); return; }
     addBtn.disabled = true;
-    await insertItem(text, newDateInput.value);
+    await insertItem(text, newDateInput.value, newCategoryInput.value);
     newItemInput.value = '';
     newDateInput.value = '';
+    newCategoryInput.value = '';
     addBtn.disabled = false;
     newItemInput.focus();
   }
