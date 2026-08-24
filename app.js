@@ -1,4 +1,7 @@
 (function () {
+  // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
+  const APP_VERSION = '4.1';
+
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_M40Z1-Ay-tUzsJT8npnPSA_qWR3TtRT';
@@ -754,6 +757,9 @@
   });
 
   // ---- init ----
+  const versionEl = document.getElementById('app-version');
+  if (versionEl) versionEl.textContent = 'v' + APP_VERSION;
+
   try {
     const s = localStorage.getItem(SKY_KEY);
     if (s === 'day') day = true;
