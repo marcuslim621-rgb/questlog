@@ -412,7 +412,17 @@
     renderCat();
   }
 
+  // Every frame is its own PNG, so a frame shown for the first time would pop in
+  // blank while it downloads. Preload them all (and keep the refs alive) up front.
+  let catPreload = [];
+  function preloadCatSprites() {
+    catPreload = Object.keys(SPRITES)
+      .filter(k => k.startsWith('c/'))
+      .map(k => { const img = new Image(); img.src = SPRITES[k]; return img; });
+  }
+
   function initCat() {
+    preloadCatSprites();
     const [bandA] = catDuoBand();
     catState.x = Math.max(40, bandA - 80);
     renderCat();
