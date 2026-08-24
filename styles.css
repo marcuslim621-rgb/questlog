@@ -415,9 +415,9 @@
   .stat-label { font-size: 8px; letter-spacing: 1px; margin-top: 7px; color: var(--dim); }
   .stat-div { width: 3px; background: var(--border-soft); }
 
-  .bond-stats { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; }
+  .bond-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .bond-stat {
-    flex: 1 1 90px; text-align: center; padding: 8px 4px;
+    min-width: 0; text-align: center; padding: 8px 4px;
     background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft);
     font-family: 'Press Start 2P', monospace;
   }
@@ -457,6 +457,7 @@
     .panel { grid-template-columns: 1fr; }
     .xp-row { flex-direction: column; align-items: flex-start; gap: 4px; }
     .stat-row { justify-content: center; }
+    .bond-stats { grid-template-columns: repeat(2, 1fr); }
 
     .quest-card.has-photo { flex-direction: column; }
     .quest-card.has-photo .photo-box { width: 100%; height: 160px; }
@@ -520,8 +521,8 @@
   .category-select:hover { filter: brightness(1.15); }
   .category-select:focus-visible { outline: 2px solid var(--gold); }
   .category-select.set-adventure { background-image: url(assets/icons/adventure.png); border-color: transparent; }
-  .category-select.set-comfort { background-image: url(assets/icons/comfort.png); border-color: transparent; }
-  .category-select.set-refined { background-image: url(assets/icons/refined.png); border-color: transparent; }
+  .category-select.set-comfort { background-image: url(assets/icons/refined.png); border-color: transparent; }
+  .category-select.set-refined { background-image: url(assets/icons/comfort.png); border-color: transparent; }
   .category-select.set-playfulness { background-image: url(assets/icons/playful.png); border-color: transparent; }
 
   .item-note {
