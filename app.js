@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.2';
+  const APP_VERSION = '6.3';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -75,6 +75,14 @@
       CLASS_THRESHOLDS.forEach((threshold, i) => {
         if (stats[cat] >= threshold) list.push({ category: cat, tier: i, title: CLASS_TITLES[cat][i] });
       });
+    });
+    return list;
+  }
+
+  function allTitles() {
+    const list = [];
+    CATEGORY_KEYS.forEach(cat => {
+      CLASS_TITLES[cat].forEach((title, i) => list.push({ category: cat, tier: i, title }));
     });
     return list;
   }
@@ -450,10 +458,17 @@
       if (on) localStorage.setItem(SECRET_OUTFITS_KEY, '1');
       else localStorage.removeItem(SECRET_OUTFITS_KEY);
     } catch (e) {}
-    // Re-locking shouldn't leave anyone wearing an outfit they can no longer pick.
-    if (!on) {
+    // Re-locking shouldn't leave anyone wearing an outfit or title they can't pick.
+    // Skipped until the quest board has loaded, since stats read as 0 before then.
+    if (!on && !loading) {
       if (!outfitAllowed('marcus', marcusOutfitIdx)) setMarcusOutfit(0);
       if (!outfitAllowed('momo', momoOutfitIdx)) setMomoOutfit(0);
+      Object.keys(CHARACTERS).forEach(c => {
+        const title = characterTitles[c];
+        if (!title) return;
+        const { stats } = characterStats(c);
+        if (!unlockedTitles(stats).some(u => u.title === title)) setCharacterTitle(c, null);
+      });
     }
     if (statModalCharacter) renderStatModal(statModalCharacter);
   }
@@ -953,7 +968,7 @@
     }
 
     const { stats, freePoints } = characterStats(character);
-    const unlocked = unlockedTitles(stats);
+    const unlocked = secretOutfitsUnlocked ? allTitles() : unlockedTitles(stats);
     const name = CHARACTERS[character];
 
     const card = document.createElement('div');
