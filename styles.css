@@ -425,7 +425,7 @@
   .bond-stat-label { font-size: 7px; letter-spacing: 1px; margin-top: 5px; color: var(--dim); }
   .bond-adventure .bond-stat-num { color: #f2b13c; }
   .bond-comfort .bond-stat-num { color: #8de08a; }
-  .bond-communication .bond-stat-num { color: #7ec8e3; }
+  .bond-refined .bond-stat-num { color: #7ec8e3; }
   .bond-playfulness .bond-stat-num { color: #d95e9c; }
 
   .tabs {
@@ -493,7 +493,7 @@
   .category-select:focus-visible { outline: 2px solid var(--gold); }
   .category-select.set-adventure { color: #f2b13c; box-shadow: 0 0 0 2px #f2b13c; }
   .category-select.set-comfort { color: #8de08a; box-shadow: 0 0 0 2px #8de08a; }
-  .category-select.set-communication { color: #7ec8e3; box-shadow: 0 0 0 2px #7ec8e3; }
+  .category-select.set-refined { color: #7ec8e3; box-shadow: 0 0 0 2px #7ec8e3; }
   .category-select.set-playfulness { color: #d95e9c; box-shadow: 0 0 0 2px #d95e9c; }
 
   .proof-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; padding-top: 10px; border-top: 3px dashed var(--border-soft); }

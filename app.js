@@ -27,7 +27,7 @@
   const CATEGORIES = {
     adventure: { label: 'Adventure', short: 'ADV', color: '#f2b13c' },
     comfort: { label: 'Comfort', short: 'CMF', color: '#8de08a' },
-    communication: { label: 'Communication', short: 'COM', color: '#7ec8e3' },
+    refined: { label: 'Refined', short: 'RFD', color: '#7ec8e3' },
     playfulness: { label: 'Playfulness', short: 'PLY', color: '#d95e9c' }
   };
   const CATEGORY_KEYS = Object.keys(CATEGORIES);
