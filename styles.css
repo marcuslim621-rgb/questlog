@@ -454,7 +454,12 @@
     display: flex; gap: 16px; align-items: flex-start;
   }
   @media (max-width: 640px) {
-    .photo-box.has-photo { width: 100%; height: 140px; }
+    .panel { grid-template-columns: 1fr; }
+    .xp-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .stat-row { justify-content: center; }
+
+    .quest-card.has-photo { flex-direction: column; }
+    .quest-card.has-photo .photo-box { width: 100%; height: 160px; }
 
     .moon-btn { width: 30px; height: 30px; right: 5%; top: 3%; }
     body.day .moon-btn { top: 112%; }

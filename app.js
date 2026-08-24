@@ -533,7 +533,9 @@
 
     visible.forEach(item => {
       const li = document.createElement('li');
-      li.className = 'quest-card' + (item.id === pendingId ? ' pending' : '');
+      li.className = 'quest-card'
+        + (item.id === pendingId ? ' pending' : '')
+        + (item.done && item.image ? ' has-photo' : '');
 
       // ---- photo box: placeholder until proof is uploaded, then the proof itself ----
       const photoBox = document.createElement('div');
