@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '5.0';
+  const APP_VERSION = '6.0';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -9,6 +9,12 @@
   const BUCKET = 'quest-photos';
 
   const SKY_KEY = 'datingPlanScroll.sky.v1';
+
+  // Secret: clicking the mailbox 5 times unlocks every outfit, ignoring class-title gates.
+  const SECRET_OUTFITS_KEY = 'questlog.secretOutfits';
+  const MAILBOX_CLICKS_NEEDED = 5;
+  let secretOutfitsUnlocked = false;
+  try { secretOutfitsUnlocked = localStorage.getItem(SECRET_OUTFITS_KEY) === '1'; } catch (e) {}
 
   // Level = total completed quests. No XP math — the count IS the level.
   const TIERS = [
@@ -256,11 +262,19 @@
         </div>
       </div>
 
+      <div class="mailbox" id="mailbox">
+        <div class="mailbox-post"></div>
+        <div class="mailbox-body"></div>
+        <div class="mailbox-slot"></div>
+        <div class="mailbox-flag"></div>
+      </div>
+
       <div class="cat-sprite" id="cat-sprite" title="click the cat"></div>`;
 
     scene.innerHTML = html;
 
     initCat();
+    initMailbox();
 
     function makeTalker(wrapId, speechId) {
       const wrap = document.getElementById(wrapId);
@@ -419,6 +433,25 @@
     catPreload = Object.keys(SPRITES)
       .filter(k => k.startsWith('c/'))
       .map(k => { const img = new Image(); img.src = SPRITES[k]; return img; });
+  }
+
+  function initMailbox() {
+    const el = document.getElementById('mailbox');
+    if (!el) return;
+    if (secretOutfitsUnlocked) el.classList.add('unlocked');
+    let clicks = 0;
+    el.addEventListener('click', () => {
+      el.classList.remove('nudge');
+      void el.offsetWidth;
+      el.classList.add('nudge');
+      if (secretOutfitsUnlocked) return;
+      if (++clicks < MAILBOX_CLICKS_NEEDED) return;
+      secretOutfitsUnlocked = true;
+      try { localStorage.setItem(SECRET_OUTFITS_KEY, '1'); } catch (e) {}
+      el.classList.add('unlocked');
+      setStatus('A parcel rattles open — every outfit is unlocked.');
+      if (statModalCharacter) renderStatModal(statModalCharacter);
+    });
   }
 
   function initCat() {
@@ -939,7 +972,8 @@
     outfitGrid.className = 'outfit-grid';
     outfits.forEach((src, i) => {
       const req = outfitReqs[i];
-      if (req && !unlocked.some(u => u.category === req.category && u.title === req.title)) return;
+      if (req && !secretOutfitsUnlocked
+          && !unlocked.some(u => u.category === req.category && u.title === req.title)) return;
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'outfit-chip' + (i === currentIdx ? ' selected' : '');

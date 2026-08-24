@@ -730,6 +730,34 @@
   .house-smoke { position: absolute; left: 18%; top: -6%; width: 36px; height: 44px; opacity: var(--night-on); transition: opacity 1.2s ease; pointer-events: none; }
   .house-smoke .puff2 { position: absolute; bottom: 0; left: 4px; background: #cfc6e4; animation: smokeRise 4.2s linear infinite; }
 
+  /* Mailbox: a quiet scene prop that hides the unlock-everything easter egg. */
+  .mailbox {
+    position: absolute; bottom: 104px; left: 3%; width: 36px; height: 58px;
+    z-index: 5; pointer-events: auto; cursor: pointer; image-rendering: pixelated;
+    transition: filter 1.6s ease;
+    filter: brightness(0.6) saturate(0.75) hue-rotate(-8deg) contrast(1.05);
+  }
+  body.day .mailbox { filter: none; }
+  .mailbox-post { position: absolute; bottom: 0; left: 14px; width: 8px; height: 30px; background: var(--stone); }
+  .mailbox-body {
+    position: absolute; bottom: 26px; left: 2px; width: 32px; height: 24px; background: var(--wall);
+    clip-path: polygon(0 100%, 0 40%, 12% 16%, 32% 2%, 68% 2%, 88% 16%, 100% 40%, 100% 100%);
+  }
+  .mailbox-slot { position: absolute; bottom: 32px; left: 9px; width: 18px; height: 4px; background: var(--stone); opacity: 0.55; }
+  .mailbox-flag { position: absolute; bottom: 36px; right: 0; width: 4px; height: 16px; background: var(--trim); transition: background 0.4s ease, transform 0.4s ease; transform-origin: 50% 100%; }
+  .mailbox-flag::after { content: ''; position: absolute; top: 0; right: 4px; width: 9px; height: 7px; background: var(--trim); transition: background 0.4s ease; }
+  .mailbox.unlocked .mailbox-flag { background: var(--gold); transform: translateY(-4px); }
+  .mailbox.unlocked .mailbox-flag::after { background: var(--gold); }
+  .mailbox.nudge { animation: mailNudge 0.3s ease; }
+  @keyframes mailNudge {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    30% { transform: translateY(-3px) rotate(-4deg); }
+    65% { transform: translateY(-1px) rotate(3deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mailbox.nudge { animation: none; }
+  }
+
   .cat-sprite {
     position: absolute; bottom: 104px; cursor: pointer; pointer-events: auto; z-index: 4;
     background-size: contain; background-repeat: no-repeat; background-position: bottom center;
