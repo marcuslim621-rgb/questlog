@@ -10,9 +10,11 @@
 
   const SKY_KEY = 'datingPlanScroll.sky.v1';
 
-  // Secret: clicking the mailbox 5 times unlocks every outfit, ignoring class-title gates.
+  // Secret: clicking the house 10 times prompts for a password; entering it unlocks
+  // every outfit, ignoring class-title gates. Clicking the house again reverts it.
   const SECRET_OUTFITS_KEY = 'questlog.secretOutfits';
-  const MAILBOX_CLICKS_NEEDED = 5;
+  const HOUSE_CLICKS_NEEDED = 10;
+  const SECRET_PASSWORD = 'unlock';
   let secretOutfitsUnlocked = false;
   try { secretOutfitsUnlocked = localStorage.getItem(SECRET_OUTFITS_KEY) === '1'; } catch (e) {}
 
@@ -262,19 +264,12 @@
         </div>
       </div>
 
-      <div class="mailbox" id="mailbox">
-        <div class="mailbox-post"></div>
-        <div class="mailbox-body"></div>
-        <div class="mailbox-slot"></div>
-        <div class="mailbox-flag"></div>
-      </div>
-
       <div class="cat-sprite" id="cat-sprite" title="click the cat"></div>`;
 
     scene.innerHTML = html;
 
     initCat();
-    initMailbox();
+    initHouseSecret();
 
     function makeTalker(wrapId, speechId) {
       const wrap = document.getElementById(wrapId);
@@ -435,22 +430,103 @@
       .map(k => { const img = new Image(); img.src = SPRITES[k]; return img; });
   }
 
-  function initMailbox() {
-    const el = document.getElementById('mailbox');
+  function outfitAllowed(character, idx) {
+    const req = (character === 'marcus' ? MARCUS_OUTFIT_REQUIREMENTS : {})[idx];
+    if (!req || secretOutfitsUnlocked) return true;
+    const { stats } = characterStats(character);
+    return unlockedTitles(stats).some(u => u.category === req.category && u.title === req.title);
+  }
+
+  function setSecretOutfits(on) {
+    secretOutfitsUnlocked = on;
+    try {
+      if (on) localStorage.setItem(SECRET_OUTFITS_KEY, '1');
+      else localStorage.removeItem(SECRET_OUTFITS_KEY);
+    } catch (e) {}
+    // Re-locking shouldn't leave anyone wearing an outfit they can no longer pick.
+    if (!on) {
+      if (!outfitAllowed('marcus', marcusOutfitIdx)) setMarcusOutfit(0);
+      if (!outfitAllowed('momo', momoOutfitIdx)) setMomoOutfit(0);
+    }
+    if (statModalCharacter) renderStatModal(statModalCharacter);
+  }
+
+  function closeSecretModal() {
+    const existing = document.getElementById('secret-modal');
+    if (existing) existing.remove();
+  }
+
+  function openSecretModal() {
+    closeSecretModal();
+
+    const modal = document.createElement('div');
+    modal.className = 'secret-modal';
+    modal.id = 'secret-modal';
+    modal.addEventListener('click', e => { if (e.target === modal) closeSecretModal(); });
+
+    const card = document.createElement('div');
+    card.className = 'secret-modal-card';
+
+    const header = document.createElement('div');
+    header.className = 'stat-modal-header';
+    header.textContent = 'ENTER PASSWORD';
+
+    const input = document.createElement('input');
+    input.type = 'password';
+    input.className = 'secret-input';
+    input.setAttribute('autocomplete', 'off');
+
+    const hint = document.createElement('div');
+    hint.className = 'secret-hint';
+
+    const submit = document.createElement('button');
+    submit.type = 'button';
+    submit.className = 'secret-submit';
+    submit.textContent = 'ENTER';
+
+    function attempt() {
+      if (input.value.trim().toLowerCase() === SECRET_PASSWORD) {
+        closeSecretModal();
+        setSecretOutfits(true);
+        setStatus('The wardrobe swings open — every outfit is unlocked.');
+        return;
+      }
+      hint.textContent = 'WRONG PASSWORD';
+      input.value = '';
+      input.focus();
+    }
+
+    submit.addEventListener('click', attempt);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') attempt();
+      if (e.key === 'Escape') closeSecretModal();
+    });
+
+    card.appendChild(header);
+    card.appendChild(input);
+    card.appendChild(hint);
+    card.appendChild(submit);
+    modal.appendChild(card);
+    document.body.appendChild(modal);
+    input.focus();
+  }
+
+  function initHouseSecret() {
+    const el = document.querySelector('.house-wrap');
     if (!el) return;
-    if (secretOutfitsUnlocked) el.classList.add('unlocked');
     let clicks = 0;
     el.addEventListener('click', () => {
-      el.classList.remove('nudge');
-      void el.offsetWidth;
-      el.classList.add('nudge');
-      if (secretOutfitsUnlocked) return;
-      if (++clicks < MAILBOX_CLICKS_NEEDED) return;
-      secretOutfitsUnlocked = true;
-      try { localStorage.setItem(SECRET_OUTFITS_KEY, '1'); } catch (e) {}
-      el.classList.add('unlocked');
-      setStatus('A parcel rattles open — every outfit is unlocked.');
-      if (statModalCharacter) renderStatModal(statModalCharacter);
+      // Once unlocked, a single click on the house puts everything back to normal.
+      if (secretOutfitsUnlocked) {
+        clicks = 0;
+        setSecretOutfits(false);
+        setStatus('The wardrobe settles back to normal.');
+        return;
+      }
+      if (document.getElementById('secret-modal')) return;
+      if (++clicks < HOUSE_CLICKS_NEEDED) return;
+      clicks = 0;
+      openSecretModal();
     });
   }
 
