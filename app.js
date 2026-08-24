@@ -517,9 +517,6 @@
     const barWidth = isMaxTier ? '100%' : Math.round((intoTier / tierSize) * 100) + '%';
 
     document.getElementById('level-label').textContent = `LV ${level}  ·  ${tier.name.toUpperCase()}`;
-    document.getElementById('xp-label').textContent = isMaxTier
-      ? 'MAX BOND'
-      : `${intoTier} / ${tierSize} TO ${TIERS[tIdx + 1].name.toUpperCase()}`;
     document.getElementById('xp-fill').style.width = barWidth;
     document.getElementById('done-count').textContent = done;
     document.getElementById('open-count').textContent = open;
