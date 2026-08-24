@@ -130,6 +130,7 @@
   .cloud {
     position: absolute; background-repeat: no-repeat; background-size: contain;
     image-rendering: pixelated; will-change: transform;
+    mix-blend-mode: multiply;
   }
   @keyframes cloudDrift {
     from { transform: translateX(-20vw); }
@@ -675,6 +676,16 @@
   }
   .title-chip:hover { box-shadow: 0 0 0 2px var(--gold); }
   .title-chip.selected { background: var(--gold); color: #0c0a12; box-shadow: 0 0 0 2px var(--gold); }
+
+  .outfit-section { margin-top: 20px; padding-top: 16px; border-top: 3px dashed var(--border-soft); }
+  .outfit-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .outfit-chip {
+    border: none; cursor: pointer; padding: 4px;
+    background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft);
+  }
+  .outfit-chip img { display: block; height: 72px; width: auto; image-rendering: pixelated; }
+  .outfit-chip:hover { box-shadow: 0 0 0 2px var(--gold); }
+  .outfit-chip.selected { box-shadow: 0 0 0 3px var(--gold); background: var(--outer); }
 
   .scanlines { position: fixed; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
   .scan-noise { position: absolute; inset: 0; opacity: 0.5; animation: crtFlicker 5s ease-in-out infinite; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255,64,64,0.05) 0 1px, rgba(64,255,120,0.05) 1px 2px, rgba(80,120,255,0.05) 2px 3px); }

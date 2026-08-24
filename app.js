@@ -240,10 +240,6 @@
         <div class="char-wrap boy" id="char-boy">
           <div class="speech-bubble" id="boy-speech">Marcus</div>
           <div class="char-flip"><img id="marcus-img" src="${SPRITE_1}" alt="Marcus"></div>
-          <div class="outfit-btns">
-            <button type="button" id="marcus-prev" aria-label="Previous outfit"></button>
-            <button type="button" id="marcus-next" aria-label="Next outfit"></button>
-          </div>
           <button type="button" class="char-nameplate" id="marcus-nameplate">
             <span class="char-name">Marcus</span>
             <span class="char-title" id="marcus-title-label">Unranked</span>
@@ -252,10 +248,6 @@
         <div class="char-wrap girl" id="char-girl">
           <div class="speech-bubble" id="girl-speech">Momo</div>
           <img id="momo-img" src="${SPRITE_2}" alt="Momo">
-          <div class="outfit-btns">
-            <button type="button" id="momo-prev" aria-label="Previous outfit"></button>
-            <button type="button" id="momo-next" aria-label="Next outfit"></button>
-          </div>
           <button type="button" class="char-nameplate" id="momo-nameplate">
             <span class="char-name">Momo</span>
             <span class="char-title" id="momo-title-label">Unranked</span>
@@ -914,11 +906,43 @@
       titleSection.appendChild(chips);
     }
 
+    // ---- outfit section ----
+    const outfits = character === 'marcus' ? MARCUS_OUTFITS : MOMO_OUTFITS;
+    const currentIdx = character === 'marcus' ? marcusOutfitIdx : momoOutfitIdx;
+    const setOutfit = character === 'marcus' ? setMarcusOutfit : setMomoOutfit;
+
+    const outfitSection = document.createElement('div');
+    outfitSection.className = 'outfit-section';
+    const outfitHeader = document.createElement('div');
+    outfitHeader.className = 'title-section-header';
+    outfitHeader.textContent = 'OUTFIT';
+    outfitSection.appendChild(outfitHeader);
+
+    const outfitGrid = document.createElement('div');
+    outfitGrid.className = 'outfit-grid';
+    outfits.forEach((src, i) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'outfit-chip' + (i === currentIdx ? ' selected' : '');
+      chip.title = 'Outfit ' + (i + 1);
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Outfit ' + (i + 1);
+      chip.appendChild(img);
+      chip.addEventListener('click', () => {
+        setOutfit(i);
+        renderStatModal(character);
+      });
+      outfitGrid.appendChild(chip);
+    });
+    outfitSection.appendChild(outfitGrid);
+
     card.appendChild(closeBtn);
     card.appendChild(header);
     card.appendChild(freeRow);
     card.appendChild(statList);
     card.appendChild(titleSection);
+    card.appendChild(outfitSection);
 
     modal.innerHTML = '';
     modal.appendChild(card);
@@ -1001,10 +1025,6 @@
 
   const momoImg = document.getElementById('momo-img');
   if (momoImg) momoImg.src = MOMO_OUTFITS[momoOutfitIdx];
-  const momoPrev = document.getElementById('momo-prev');
-  const momoNext = document.getElementById('momo-next');
-  if (momoPrev) momoPrev.addEventListener('click', e => { e.stopPropagation(); setMomoOutfit(momoOutfitIdx - 1); });
-  if (momoNext) momoNext.addEventListener('click', e => { e.stopPropagation(); setMomoOutfit(momoOutfitIdx + 1); });
 
   // Marcus outfits: add more sprite constants above and list them here as they're added
   const MARCUS_OUTFITS = [SPRITE_1, SPRITE_1_B, SPRITE_1_C, SPRITE_1_D];
@@ -1016,7 +1036,7 @@
   } catch (e) {}
 
   function setMarcusOutfit(idx) {
-    marcusOutfitIdx = (idx + MARCUS_OUTFITS.length) % MARCUS_OUTFITS.length;
+    marcusOutfitIdx = ((idx % MARCUS_OUTFITS.length) + MARCUS_OUTFITS.length) % MARCUS_OUTFITS.length;
     const img = document.getElementById('marcus-img');
     if (img) img.src = MARCUS_OUTFITS[marcusOutfitIdx];
     try { localStorage.setItem(MARCUS_OUTFIT_KEY, marcusOutfitIdx); } catch (e) {}
@@ -1024,10 +1044,6 @@
 
   const marcusImg = document.getElementById('marcus-img');
   if (marcusImg) marcusImg.src = MARCUS_OUTFITS[marcusOutfitIdx];
-  const marcusPrev = document.getElementById('marcus-prev');
-  const marcusNext = document.getElementById('marcus-next');
-  if (marcusPrev) marcusPrev.addEventListener('click', e => { e.stopPropagation(); setMarcusOutfit(marcusOutfitIdx - 1); });
-  if (marcusNext) marcusNext.addEventListener('click', e => { e.stopPropagation(); setMarcusOutfit(marcusOutfitIdx + 1); });
 
   loadItems();
   loadCharacterTitles();
