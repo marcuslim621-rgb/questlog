@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.5';
+  const APP_VERSION = '6.6';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -1043,17 +1043,41 @@
       none.textContent = 'Reach 5 in any stat to unlock a title.';
       titleSection.appendChild(none);
     } else {
-      const chips = document.createElement('div');
-      chips.className = 'title-chips';
-      unlocked.forEach(u => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'title-chip' + (characterTitles[character] === u.title ? ' selected' : '');
-        chip.textContent = u.title;
-        chip.addEventListener('click', () => setCharacterTitle(character, u.title));
-        chips.appendChild(chip);
+      const select = document.createElement('select');
+      select.className = 'title-select';
+
+      const blank = document.createElement('option');
+      blank.value = '';
+      blank.textContent = 'Beginner';
+      select.appendChild(blank);
+
+      CATEGORY_KEYS.forEach(cat => {
+        const inCategory = unlocked.filter(u => u.category === cat);
+        if (!inCategory.length) return;
+        const group = document.createElement('optgroup');
+        group.label = CATEGORIES[cat].label;
+        inCategory.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.title;
+          opt.textContent = u.title;
+          group.appendChild(opt);
+        });
+        select.appendChild(group);
       });
-      titleSection.appendChild(chips);
+
+      // A title can still be set that's no longer in the list (e.g. after re-locking),
+      // so keep an entry for it rather than silently showing the wrong name.
+      const current = characterTitles[character] || '';
+      if (current && !unlocked.some(u => u.title === current)) {
+        const opt = document.createElement('option');
+        opt.value = current;
+        opt.textContent = current;
+        select.insertBefore(opt, select.firstChild.nextSibling);
+      }
+      select.value = current;
+
+      select.addEventListener('change', () => setCharacterTitle(character, select.value || null));
+      titleSection.appendChild(select);
     }
 
     // ---- outfit section ----
