@@ -568,6 +568,25 @@
       });
       text.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); text.blur(); } });
 
+      const catSelect = document.createElement('select');
+      catSelect.className = 'category-select' + (item.category ? ' set-' + item.category : '');
+      catSelect.title = 'Which closeness stat this quest builds';
+      const blankOpt = document.createElement('option');
+      blankOpt.value = '';
+      blankOpt.textContent = '— stat —';
+      catSelect.appendChild(blankOpt);
+      CATEGORY_KEYS.forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = CATEGORIES[key].label;
+        if (item.category === key) opt.selected = true;
+        catSelect.appendChild(opt);
+      });
+      catSelect.addEventListener('change', () => {
+        catSelect.className = 'category-select' + (catSelect.value ? ' set-' + catSelect.value : '');
+        updateItem(item.id, { category: catSelect.value });
+      });
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'remove-btn';
@@ -576,6 +595,7 @@
       removeBtn.addEventListener('click', () => removeItem(item.id));
 
       top.appendChild(text);
+      top.appendChild(catSelect);
       top.appendChild(removeBtn);
 
       // ---- one meta line: logged/cleared date · due date · category ----
@@ -617,31 +637,6 @@
       dateInput.value = item.date || '';
       dateInput.addEventListener('change', () => updateItem(item.id, { date: dateInput.value }));
       meta.appendChild(dateInput);
-
-      const sep2 = document.createElement('span');
-      sep2.className = 'meta-sep';
-      sep2.textContent = '/';
-      meta.appendChild(sep2);
-
-      const catSelect = document.createElement('select');
-      catSelect.className = 'category-select' + (item.category ? ' set-' + item.category : '');
-      catSelect.title = 'Which closeness stat this quest builds';
-      const blankOpt = document.createElement('option');
-      blankOpt.value = '';
-      blankOpt.textContent = '— stat —';
-      catSelect.appendChild(blankOpt);
-      CATEGORY_KEYS.forEach(key => {
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = CATEGORIES[key].label;
-        if (item.category === key) opt.selected = true;
-        catSelect.appendChild(opt);
-      });
-      catSelect.addEventListener('change', () => {
-        catSelect.className = 'category-select' + (catSelect.value ? ' set-' + catSelect.value : '');
-        updateItem(item.id, { category: catSelect.value });
-      });
-      meta.appendChild(catSelect);
 
       if (item.done) {
         const undoBtn = document.createElement('button');

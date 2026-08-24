@@ -507,16 +507,17 @@
 
   .category-select {
     appearance: none; -webkit-appearance: none; -moz-appearance: none;
-    width: 22px; height: 22px; padding: 0; border: none; cursor: pointer;
+    flex: 0 0 auto; width: 34px; height: 34px; padding: 0; box-sizing: border-box; cursor: pointer;
     font-size: 0; color: transparent;
-    background-color: var(--input-bg); background-repeat: no-repeat; background-position: center; background-size: 16px 16px;
-    box-shadow: 0 0 0 2px var(--border-soft); image-rendering: pixelated;
+    background-color: transparent; background-repeat: no-repeat; background-position: center; background-size: 30px 30px;
+    border: 2px dashed var(--border-soft); image-rendering: pixelated;
   }
+  .category-select:hover { filter: brightness(1.15); }
   .category-select:focus-visible { outline: 2px solid var(--gold); }
-  .category-select.set-adventure { background-image: url(assets/icons/adventure.png); box-shadow: 0 0 0 2px #f2b13c; }
-  .category-select.set-comfort { background-image: url(assets/icons/comfort.png); box-shadow: 0 0 0 2px #8de08a; }
-  .category-select.set-refined { background-image: url(assets/icons/refined.png); box-shadow: 0 0 0 2px #7ec8e3; }
-  .category-select.set-playfulness { background-image: url(assets/icons/playful.png); box-shadow: 0 0 0 2px #d95e9c; }
+  .category-select.set-adventure { background-image: url(assets/icons/adventure.png); border-color: transparent; }
+  .category-select.set-comfort { background-image: url(assets/icons/comfort.png); border-color: transparent; }
+  .category-select.set-refined { background-image: url(assets/icons/refined.png); border-color: transparent; }
+  .category-select.set-playfulness { background-image: url(assets/icons/playful.png); border-color: transparent; }
 
   .item-note {
     position: relative; min-width: 0;
