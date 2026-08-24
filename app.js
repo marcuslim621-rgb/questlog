@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.1';
+  const APP_VERSION = '6.2';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -119,7 +119,10 @@
   const SPRITE_1_B = 'assets/characters/sprite-1-b.png';
   const SPRITE_1_C = 'assets/characters/sprite-1-c.png';
   const SPRITE_1_D = 'assets/characters/sprite-1-d.png';
+  const SPRITE_1_ADV_SQUIRE = 'assets/characters/Marcus_Adventure1.png';
   const SPRITE_1_ADV_KNIGHT = 'assets/characters/Marcus_Adventure2.png';
+  const SPRITE_1_ADV_VANGUARD = 'assets/characters/Marcus_Adventure3.png';
+  const SPRITE_1_ADV_CHAMPION = 'assets/characters/Marcus_Adventure4.png';
   const SPRITE_2 = 'assets/characters/sprite-2.png';
   const SPRITE_2_B = 'assets/characters/sprite-2-b.png';
   const SPRITE_3 = 'assets/characters/sprite-3.png';
@@ -1170,9 +1173,17 @@
   if (momoImg) momoImg.src = MOMO_OUTFITS[momoOutfitIdx];
 
   // Marcus outfits: add more sprite constants above and list them here as they're added
-  const MARCUS_OUTFITS = [SPRITE_1, SPRITE_1_B, SPRITE_1_C, SPRITE_1_D, SPRITE_1_ADV_KNIGHT];
-  // Outfits gated behind a class title: only shown in the picker once that title is unlocked
-  const MARCUS_OUTFIT_REQUIREMENTS = { 4: { category: 'adventure', title: 'Knight' } };
+  const MARCUS_OUTFITS = [
+    SPRITE_1, SPRITE_1_B, SPRITE_1_C, SPRITE_1_D,
+    SPRITE_1_ADV_SQUIRE, SPRITE_1_ADV_KNIGHT, SPRITE_1_ADV_VANGUARD, SPRITE_1_ADV_CHAMPION
+  ];
+  // Each adventure outfit appears only once its matching class title is earned.
+  const MARCUS_OUTFIT_REQUIREMENTS = {
+    4: { category: 'adventure', title: 'Squire' },
+    5: { category: 'adventure', title: 'Knight' },
+    6: { category: 'adventure', title: 'Vanguard' },
+    7: { category: 'adventure', title: 'Champion' }
+  };
   const MARCUS_OUTFIT_KEY = 'questlog.marcusOutfit';
   let marcusOutfitIdx = 0;
   try {
