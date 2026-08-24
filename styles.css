@@ -453,8 +453,7 @@
     display: flex; gap: 16px; align-items: flex-start;
   }
   @media (max-width: 640px) {
-    .quest-card { flex-direction: column; }
-    .photo-box { width: 100%; height: 140px; }
+    .photo-box.has-photo { width: 100%; height: 140px; }
 
     .moon-btn { width: 30px; height: 30px; right: 5%; top: 3%; }
     body.day .moon-btn { top: 112%; }
@@ -463,13 +462,18 @@
   }
 
   .photo-box {
-    position: relative; flex: 0 0 96px; width: 96px; height: 96px; cursor: pointer;
+    position: relative; flex: 0 0 34px; width: 34px; height: 34px; cursor: pointer;
+    margin-top: 2px;
     background: var(--input-bg);
     box-shadow: 0 -3px 0 var(--border), 0 3px 0 var(--border), -3px 0 0 var(--border), 3px 0 0 var(--border);
     image-rendering: pixelated;
+    transition: width 0.3s ease, height 0.3s ease;
   }
   .photo-box:active { transform: translateY(2px); }
-  .photo-box.has-photo { box-shadow: 0 0 0 3px var(--green); }
+  .photo-box.has-photo {
+    flex-basis: 96px; width: 96px; height: 96px; margin-top: 0;
+    box-shadow: 0 0 0 3px var(--green);
+  }
   .photo-box.has-photo:active { transform: none; }
   .photo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .quest-card.pending .photo-box { animation: bob 0.5s steps(2, end) infinite; }
