@@ -421,6 +421,7 @@
     background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft);
     font-family: 'Press Start 2P', monospace;
   }
+  .bond-stat-icon { width: 30px; height: 30px; image-rendering: pixelated; display: block; margin: 0 auto 4px; }
   .bond-stat-num { font-size: 16px; }
   .bond-stat-label { font-size: 7px; letter-spacing: 1px; margin-top: 5px; color: var(--dim); }
   .bond-adventure .bond-stat-num { color: #f2b13c; }
