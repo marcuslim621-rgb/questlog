@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '4.3';
+  const APP_VERSION = '5.0';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -34,6 +34,78 @@
     playfulness: { label: 'Playfulness', short: 'PLY', color: '#d95e9c' }
   };
   const CATEGORY_KEYS = Object.keys(CATEGORIES);
+
+  // Individual stat + class system: each completed quest gives its category +1,
+  // plus one free bonus point (per character) that can be spent on any category.
+  const CLASS_TITLES = {
+    adventure: ['Squire', 'Knight', 'Vanguard', 'Champion'],
+    comfort: ['Acolyte', 'Cleric', 'Priest', 'Sage'],
+    refined: ['Apprentice', 'Mage', 'Archmage', 'Grand Archmage'],
+    playfulness: ['Scout', 'Rogue', 'Ranger', 'Marksman']
+  };
+  const CLASS_THRESHOLDS = [5, 10, 15, 20];
+  const CHARACTERS = { marcus: 'Marcus', momo: 'Momo' };
+
+  function characterStats(character) {
+    const bonusKey = character + 'Bonus';
+    const stats = {};
+    CATEGORY_KEYS.forEach(k => { stats[k] = 0; });
+    let freePoints = 0;
+    items.forEach(item => {
+      if (!item.done) return;
+      if (item.category && stats.hasOwnProperty(item.category)) stats[item.category]++;
+      const bonus = item[bonusKey];
+      if (bonus && stats.hasOwnProperty(bonus)) stats[bonus]++;
+      else if (!bonus) freePoints++;
+    });
+    return { stats, freePoints };
+  }
+
+  function unlockedTitles(stats) {
+    const list = [];
+    CATEGORY_KEYS.forEach(cat => {
+      CLASS_THRESHOLDS.forEach((threshold, i) => {
+        if (stats[cat] >= threshold) list.push({ category: cat, tier: i, title: CLASS_TITLES[cat][i] });
+      });
+    });
+    return list;
+  }
+
+  let characterTitles = { marcus: null, momo: null };
+
+  async function loadCharacterTitles() {
+    const { data, error } = await supabase.from('character_titles').select('*');
+    if (error) { setStatus('Could not load titles: ' + error.message, true); return; }
+    data.forEach(row => { characterTitles[row.character] = row.title; });
+    renderNameplates();
+    if (statModalCharacter) renderStatModal(statModalCharacter);
+  }
+
+  async function setCharacterTitle(character, title) {
+    characterTitles[character] = title;
+    renderNameplates();
+    if (statModalCharacter) renderStatModal(statModalCharacter);
+    const { error } = await supabase
+      .from('character_titles')
+      .update({ title, updated_at: new Date().toISOString() })
+      .eq('character', character);
+    if (error) setStatus('Could not save title: ' + error.message, true);
+  }
+
+  async function spendFreePoint(character, category) {
+    const bonusKey = character + 'Bonus';
+    const candidate = items.find(i => i.done && !i[bonusKey]);
+    if (!candidate) return;
+    await updateItem(candidate.id, { [bonusKey]: category });
+    renderStatModal(character);
+  }
+
+  function renderNameplates() {
+    Object.keys(CHARACTERS).forEach(character => {
+      const label = document.getElementById(character + '-title-label');
+      if (label) label.textContent = characterTitles[character] || 'Unranked';
+    });
+  }
 
   const SPRITE_1 = 'assets/characters/sprite-1.png';
   const SPRITE_1_B = 'assets/characters/sprite-1-b.png';
@@ -172,6 +244,10 @@
             <button type="button" id="marcus-prev" aria-label="Previous outfit"></button>
             <button type="button" id="marcus-next" aria-label="Next outfit"></button>
           </div>
+          <button type="button" class="char-nameplate" id="marcus-nameplate">
+            <span class="char-name">Marcus</span>
+            <span class="char-title" id="marcus-title-label">Unranked</span>
+          </button>
         </div>
         <div class="char-wrap girl" id="char-girl">
           <div class="speech-bubble" id="girl-speech">Momo</div>
@@ -180,6 +256,10 @@
             <button type="button" id="momo-prev" aria-label="Previous outfit"></button>
             <button type="button" id="momo-next" aria-label="Next outfit"></button>
           </div>
+          <button type="button" class="char-nameplate" id="momo-nameplate">
+            <span class="char-name">Momo</span>
+            <span class="char-title" id="momo-title-label">Unranked</span>
+          </button>
         </div>
       </div>
 
@@ -204,6 +284,16 @@
     }
     makeTalker('char-boy', 'boy-speech');
     makeTalker('char-girl', 'girl-speech');
+
+    document.getElementById('marcus-nameplate').addEventListener('click', e => {
+      e.stopPropagation();
+      openStatModal('marcus');
+    });
+    document.getElementById('momo-nameplate').addEventListener('click', e => {
+      e.stopPropagation();
+      openStatModal('momo');
+    });
+    renderNameplates();
   }
 
   // Bond scene: the shared garden/path grows a little with every tier reached.
@@ -416,7 +506,9 @@
       note: row.note || '',
       image: row.image_url || '',
       category: row.category || '',
-      createdAt: row.created_at ? row.created_at.slice(0, 10) : ''
+      createdAt: row.created_at ? row.created_at.slice(0, 10) : '',
+      marcusBonus: row.marcus_bonus_category || '',
+      momoBonus: row.momo_bonus_category || ''
     };
   }
 
@@ -440,6 +532,8 @@
     if ('note' in changes) dbChanges.note = changes.note;
     if ('image' in changes) dbChanges.image_url = changes.image || null;
     if ('category' in changes) dbChanges.category = changes.category || null;
+    if ('marcusBonus' in changes) dbChanges.marcus_bonus_category = changes.marcusBonus || null;
+    if ('momoBonus' in changes) dbChanges.momo_bonus_category = changes.momoBonus || null;
 
     const item = items.find(i => i.id === id);
     if (item) Object.assign(item, changes);
@@ -530,6 +624,8 @@
     });
 
     updateSceneTier(tIdx);
+
+    if (statModalCharacter) renderStatModal(statModalCharacter);
 
     visible.forEach(item => {
       const li = document.createElement('li');
@@ -708,6 +804,126 @@
     render();
   });
 
+  // ---- individual stat + class modal ----
+  let statModalCharacter = null;
+
+  function openStatModal(character) {
+    statModalCharacter = character;
+    renderStatModal(character);
+  }
+
+  function closeStatModal() {
+    statModalCharacter = null;
+    const existing = document.getElementById('stat-modal');
+    if (existing) existing.remove();
+  }
+
+  function renderStatModal(character) {
+    if (statModalCharacter !== character) return;
+    let modal = document.getElementById('stat-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'stat-modal';
+      modal.id = 'stat-modal';
+      modal.addEventListener('click', e => { if (e.target === modal) closeStatModal(); });
+      document.body.appendChild(modal);
+    }
+
+    const { stats, freePoints } = characterStats(character);
+    const unlocked = unlockedTitles(stats);
+    const name = CHARACTERS[character];
+
+    const card = document.createElement('div');
+    card.className = 'stat-modal-card';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'stat-modal-close';
+    closeBtn.textContent = '×';
+    closeBtn.addEventListener('click', closeStatModal);
+
+    const header = document.createElement('div');
+    header.className = 'stat-modal-header';
+    header.textContent = name.toUpperCase() + '’S STATS';
+
+    const freeRow = document.createElement('div');
+    freeRow.className = 'stat-free-row';
+    freeRow.textContent = freePoints > 0
+      ? `${freePoints} FREE POINT${freePoints > 1 ? 'S' : ''} TO SPEND`
+      : 'NO FREE POINTS TO SPEND';
+
+    const statList = document.createElement('div');
+    statList.className = 'stat-list';
+    CATEGORY_KEYS.forEach(cat => {
+      const row = document.createElement('div');
+      row.className = 'stat-list-row';
+
+      const icon = document.createElement('img');
+      icon.className = 'stat-list-icon';
+      icon.src = 'assets/icons/' + (cat === 'playfulness' ? 'playful' : cat) + '.png';
+      icon.alt = '';
+
+      const label = document.createElement('div');
+      label.className = 'stat-list-label';
+      label.textContent = CATEGORIES[cat].label;
+
+      const num = document.createElement('div');
+      num.className = 'stat-list-num';
+      num.textContent = stats[cat];
+
+      row.appendChild(icon);
+      row.appendChild(label);
+      row.appendChild(num);
+
+      if (freePoints > 0) {
+        const plusBtn = document.createElement('button');
+        plusBtn.type = 'button';
+        plusBtn.className = 'stat-plus-btn';
+        plusBtn.textContent = '+1';
+        plusBtn.title = 'Spend a free point on ' + CATEGORIES[cat].label;
+        plusBtn.addEventListener('click', () => spendFreePoint(character, cat));
+        row.appendChild(plusBtn);
+      }
+
+      statList.appendChild(row);
+    });
+
+    const titleSection = document.createElement('div');
+    titleSection.className = 'title-section';
+    const titleHeader = document.createElement('div');
+    titleHeader.className = 'title-section-header';
+    titleHeader.textContent = 'TITLE';
+    titleSection.appendChild(titleHeader);
+
+    if (unlocked.length === 0) {
+      const none = document.createElement('div');
+      none.className = 'title-none';
+      none.textContent = 'Reach 5 in any stat to unlock a title.';
+      titleSection.appendChild(none);
+    } else {
+      const chips = document.createElement('div');
+      chips.className = 'title-chips';
+      unlocked.forEach(u => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'title-chip' + (characterTitles[character] === u.title ? ' selected' : '');
+        chip.textContent = u.title;
+        chip.addEventListener('click', () => setCharacterTitle(character, u.title));
+        chips.appendChild(chip);
+      });
+      titleSection.appendChild(chips);
+    }
+
+    card.appendChild(closeBtn);
+    card.appendChild(header);
+    card.appendChild(freeRow);
+    card.appendChild(statList);
+    card.appendChild(titleSection);
+
+    modal.innerHTML = '';
+    modal.appendChild(card);
+  }
+
   function openZoom(src) {
     const modal = document.createElement('div');
     modal.className = 'zoom-modal';
@@ -814,9 +1030,15 @@
   if (marcusNext) marcusNext.addEventListener('click', e => { e.stopPropagation(); setMarcusOutfit(marcusOutfitIdx + 1); });
 
   loadItems();
+  loadCharacterTitles();
 
   supabase
     .channel('quests-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'quests' }, () => { loadItems(); })
+    .subscribe();
+
+  supabase
+    .channel('character-titles-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'character_titles' }, () => { loadCharacterTitles(); })
     .subscribe();
 })();

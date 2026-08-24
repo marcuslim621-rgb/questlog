@@ -252,6 +252,18 @@
   #momo-next::before { border-left: 10px solid var(--gold); transform: translate(-55%, -50%); }
   #marcus-prev::before { border-right: 10px solid var(--gold); transform: translate(-45%, -50%); }
   #marcus-next::before { border-left: 10px solid var(--gold); transform: translate(-55%, -50%); }
+
+  .char-nameplate {
+    position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 46px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 5px 10px; border: none; cursor: pointer; white-space: nowrap;
+    background: var(--panel); box-shadow: 0 0 0 2px var(--border-soft), 3px 3px 0 rgba(0,0,0,0.3);
+    pointer-events: auto; font-family: 'Press Start 2P', monospace;
+  }
+  .char-nameplate:hover { box-shadow: 0 0 0 2px var(--gold), 3px 3px 0 rgba(0,0,0,0.3); }
+  .char-nameplate:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .char-nameplate .char-name { font-size: 10px; letter-spacing: 1px; color: var(--gold); }
+  .char-nameplate .char-title { font-size: 8px; letter-spacing: 1px; color: var(--dim); }
   @keyframes charBounce {
     0% { transform: translateY(0) scale(1, 1); }
     30% { transform: translateY(-16px) scale(0.96, 1.08); }
@@ -599,6 +611,63 @@
     padding: 32px; cursor: zoom-out; background: rgba(6,5,10,0.92);
   }
   .zoom-modal img { max-width: 100%; max-height: 88vh; box-shadow: 0 0 0 5px #f4ecd8, 0 0 0 11px #0c0a12; }
+
+  .stat-modal {
+    position: fixed; inset: 0; z-index: 101; display: flex; align-items: center; justify-content: center;
+    padding: 20px; background: rgba(6,5,10,0.92); overflow-y: auto;
+  }
+  .stat-modal-card {
+    position: relative; width: 100%; max-width: 420px; padding: 22px 20px 26px;
+    background: var(--panel);
+    box-shadow: 0 -4px 0 var(--border), 0 4px 0 var(--border), -4px 0 0 var(--border), 4px 0 0 var(--border), 0 0 0 8px var(--outer), 10px 10px 0 rgba(0,0,0,0.35);
+  }
+  .stat-modal-close {
+    position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; padding: 0;
+    border: none; cursor: pointer; background: transparent;
+    font-family: 'Press Start 2P', monospace; font-size: 13px; color: var(--faint);
+  }
+  .stat-modal-close:hover { background: #b8402c; color: #f4ecd8; }
+  .stat-modal-header {
+    font-family: 'Press Start 2P', monospace; font-size: 13px; letter-spacing: 1px; color: var(--gold);
+    text-align: center; margin-bottom: 6px; padding-right: 20px;
+  }
+  .stat-free-row {
+    font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1px; color: var(--green);
+    text-align: center; margin-bottom: 18px;
+  }
+  .stat-list { display: flex; flex-direction: column; gap: 10px; }
+  .stat-list-row {
+    display: flex; align-items: center; gap: 12px; padding: 8px 10px;
+    background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft);
+  }
+  .stat-list-icon { width: 28px; height: 28px; image-rendering: pixelated; flex: 0 0 auto; }
+  .stat-list-label {
+    flex: 1 1 auto; font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted);
+  }
+  .stat-list-num { font-family: 'Press Start 2P', monospace; font-size: 15px; color: var(--gold); min-width: 22px; text-align: right; }
+  .stat-plus-btn {
+    flex: 0 0 auto; padding: 6px 8px; border: none; cursor: pointer;
+    background: #3f9c52; color: #0c0a12;
+    font-family: 'Press Start 2P', monospace; font-size: 9px;
+    box-shadow: 0 -2px 0 rgba(0,0,0,0.2) inset;
+  }
+  .stat-plus-btn:hover { filter: brightness(1.1); }
+  .stat-plus-btn:active { transform: translateY(1px); }
+
+  .title-section { margin-top: 20px; padding-top: 16px; border-top: 3px dashed var(--border-soft); }
+  .title-section-header {
+    font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 2px; color: var(--dim);
+    margin-bottom: 10px;
+  }
+  .title-none { font-size: 17px; color: var(--faint); }
+  .title-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .title-chip {
+    padding: 8px 12px; border: none; cursor: pointer;
+    background: var(--input-bg); color: var(--muted); box-shadow: 0 0 0 2px var(--border-soft);
+    font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1px;
+  }
+  .title-chip:hover { box-shadow: 0 0 0 2px var(--gold); }
+  .title-chip.selected { background: var(--gold); color: #0c0a12; box-shadow: 0 0 0 2px var(--gold); }
 
   .scanlines { position: fixed; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
   .scan-noise { position: absolute; inset: 0; opacity: 0.5; animation: crtFlicker 5s ease-in-out infinite; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255,64,64,0.05) 0 1px, rgba(64,255,120,0.05) 1px 2px, rgba(80,120,255,0.05) 2px 3px); }
