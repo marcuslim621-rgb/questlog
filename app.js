@@ -387,7 +387,7 @@
       const per = seq.dx / seq.frames.length;
       const [bandA, bandB] = catDuoBand();
       let x = Math.max(40, Math.min(window.innerWidth - 260, catState.x + per));
-      const left = catState.x <= bandA;
+      const left = catState.walkSide;
       if (left && x > bandA - 80) x = bandA - 80;
       if (!left && x < bandB + 20) x = bandB + 20;
       catState.x = x;
@@ -401,6 +401,10 @@
     let pick = CAT_CLICK_ACTIONS[Math.floor(Math.random() * CAT_CLICK_ACTIONS.length)];
     if (pick === 'walkright' && catState.x > window.innerWidth - 420) pick = 'walkleft';
     if (pick === 'walkleft' && catState.x < 200) pick = 'walkright';
+    if (pick === 'walkright' || pick === 'walkleft') {
+      const [bandA] = catDuoBand();
+      catState.walkSide = catState.x <= bandA;
+    }
     catState.acc = 0;
     catState.anim = pick;
     catState.step = 0;
@@ -409,7 +413,7 @@
 
   function initCat() {
     const [bandA] = catDuoBand();
-    catState.x = Math.max(40, bandA - 60);
+    catState.x = Math.max(40, bandA - 80);
     renderCat();
     const el = document.getElementById('cat-sprite');
     if (el) el.addEventListener('click', pokeCat);
