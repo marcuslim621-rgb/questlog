@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.4';
+  const APP_VERSION = '6.5';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';
@@ -139,6 +139,10 @@
   const SPRITE_2_CMF_CLERIC = 'assets/characters/Momo_Comfort2.png';
   const SPRITE_2_CMF_PRIEST = 'assets/characters/Momo_Comfort3.png';
   const SPRITE_2_CMF_SAGE = 'assets/characters/Momo_Comfort4.png';
+  const SPRITE_2_ADV_SQUIRE = 'assets/characters/Momo_Adventure1.png';
+  const SPRITE_2_ADV_KNIGHT = 'assets/characters/Momo_Adventure2.png';
+  const SPRITE_2_ADV_VANGUARD = 'assets/characters/Momo_Adventure3.png';
+  const SPRITE_2_ADV_CHAMPION = 'assets/characters/Momo_Adventure4.png';
 
   const FLOWERS = [
     { left: '6%', color: '#e8657f', delay: '0.15s' }, { left: '13%', color: '#f2b13c', delay: '0.5s' },
@@ -1161,14 +1165,19 @@
   // ---- outfit switcher ----
   const MOMO_OUTFITS = [
     SPRITE_2, SPRITE_2_B, SPRITE_3, SPRITE_4,
-    SPRITE_2_CMF_ACOLYTE, SPRITE_2_CMF_CLERIC, SPRITE_2_CMF_PRIEST, SPRITE_2_CMF_SAGE
+    SPRITE_2_CMF_ACOLYTE, SPRITE_2_CMF_CLERIC, SPRITE_2_CMF_PRIEST, SPRITE_2_CMF_SAGE,
+    SPRITE_2_ADV_SQUIRE, SPRITE_2_ADV_KNIGHT, SPRITE_2_ADV_VANGUARD, SPRITE_2_ADV_CHAMPION
   ];
-  // Each comfort outfit appears only once its matching class title is earned.
+  // Each class outfit appears only once its matching class title is earned.
   const MOMO_OUTFIT_REQUIREMENTS = {
     4: { category: 'comfort', title: 'Acolyte' },
     5: { category: 'comfort', title: 'Cleric' },
     6: { category: 'comfort', title: 'Priest' },
-    7: { category: 'comfort', title: 'Sage' }
+    7: { category: 'comfort', title: 'Sage' },
+    8: { category: 'adventure', title: 'Squire' },
+    9: { category: 'adventure', title: 'Knight' },
+    10: { category: 'adventure', title: 'Vanguard' },
+    11: { category: 'adventure', title: 'Champion' }
   };
   const MOMO_OUTFIT_KEY = 'questlog.momoOutfit';
   let momoOutfitIdx = 0;
