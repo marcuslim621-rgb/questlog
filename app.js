@@ -1,6 +1,6 @@
 (function () {
   // Bump on every change: +1 for a new feature, +0.1 for a visual/polish change.
-  const APP_VERSION = '6.6';
+  const APP_VERSION = '7.6';
 
   // ---- Supabase setup ----
   const SUPABASE_URL = 'https://amwralfgyxwnzzsoyfki.supabase.co';

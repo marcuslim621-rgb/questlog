@@ -782,3 +782,84 @@
     filter: brightness(0.6) saturate(0.75) hue-rotate(-8deg) contrast(1.05);
   }
   body.day .cat-sprite { filter: none; }
+
+  /* ---- Home Fund 2030 ---- */
+  .home-fund-btn {
+    margin: 0 6px; padding: 12px 16px; border: none; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    background: var(--panel); color: var(--gold);
+    font-family: 'Press Start 2P', monospace; font-size: 10px; letter-spacing: 2px;
+    box-shadow: 0 -3px 0 var(--border-soft), 0 3px 0 var(--border-soft), -3px 0 0 var(--border-soft), 3px 0 0 var(--border-soft);
+  }
+  .home-fund-btn:hover { box-shadow: 0 -3px 0 var(--gold), 0 3px 0 var(--gold), -3px 0 0 var(--gold), 3px 0 0 var(--gold); }
+  .home-fund-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+  .home-fund-btn .arrow { display: inline-block; animation: bob 1.1s steps(2, end) infinite; }
+  .hf-btn-pct { font-size: 8px; color: var(--green); white-space: nowrap; }
+
+  .hf-modal { align-items: flex-start; }
+  .hf-card { max-width: 720px; margin: 20px 0; }
+  .hf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .hf-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .hf-label { font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px; color: var(--dim); line-height: 1.5; }
+  .hf-input-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .hf-affix { font-size: 20px; color: var(--muted); }
+  .hf-input {
+    flex: 1 1 auto; min-width: 0; width: 100%; padding: 6px 8px; border: none;
+    font-family: 'VT323', monospace; font-size: 21px; background: var(--input-bg); color: var(--ink);
+    box-shadow: 0 0 0 2px var(--border-soft); color-scheme: var(--scheme);
+  }
+  .hf-input:focus { outline: none; box-shadow: 0 0 0 2px var(--gold); }
+  .hf-input-small { flex: 0 0 64px; width: 64px; }
+
+  .hf-details { margin-top: 18px; padding-top: 14px; border-top: 3px dashed var(--border-soft); }
+  .hf-details summary { cursor: pointer; font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 2px; color: var(--dim); }
+  .hf-details summary:hover { color: var(--gold); }
+  .hf-assume { display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 8px 10px; align-items: center; margin-top: 14px; }
+  .hf-assume-head { font-family: 'Press Start 2P', monospace; font-size: 7px; color: var(--dim); line-height: 1.6; }
+  .hf-assume-head small { font-family: 'VT323', monospace; font-size: 14px; }
+  .hf-assume-name { font-family: 'Press Start 2P', monospace; font-size: 8px; }
+  .hf-vol { margin-top: 14px; max-width: 260px; }
+  .hf-reset {
+    margin-top: 12px; padding: 8px 10px; border: none; cursor: pointer; background: var(--input-bg); color: var(--muted);
+    font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px; box-shadow: 0 0 0 2px var(--border-soft);
+  }
+  .hf-reset:hover { color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+
+  .hf-results { margin-top: 18px; padding-top: 16px; border-top: 3px dashed var(--border-soft); display: flex; flex-direction: column; gap: 16px; }
+  .hf-empty { font-size: 19px; color: var(--faint); text-align: center; padding: 10px 0; }
+  .hf-goal-line { font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted); text-align: center; line-height: 1.8; }
+  .hf-goal-line b { color: var(--gold); font-size: 12px; }
+  .hf-goal-line small { display: block; font-family: 'VT323', monospace; font-size: 17px; letter-spacing: 0; color: var(--faint); }
+  .hf-scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .hf-sc { padding: 10px; background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft), inset 0 3px 0 var(--sc); min-width: 0; }
+  .hf-sc-name { font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px; color: var(--sc); }
+  .hf-sc-val { font-family: 'Press Start 2P', monospace; font-size: 14px; color: var(--ink); margin: 8px 0; }
+  .hf-bar { height: 8px; background: var(--outer); box-shadow: 0 0 0 1px var(--border-soft); }
+  .hf-bar div { height: 100%; background: var(--sc); }
+  .hf-sc-diff { font-size: 18px; margin-top: 6px; }
+  .hf-sc-diff.ok, .hf-mc-big.ok { color: var(--green); }
+  .hf-sc-diff.short, .hf-mc-big.short { color: #ff8f7a; }
+  .hf-sc-when { font-size: 15px; color: var(--faint); }
+
+  .hf-chart { width: 100%; height: auto; display: block; background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft); }
+  .hf-chart .hf-gridline { stroke: var(--border-soft); stroke-width: 1; stroke-dasharray: 2 4; }
+  .hf-axis { fill: var(--dim); font-family: 'VT323', monospace; font-size: 15px; }
+  .hf-band { fill: var(--gold); opacity: 0.12; }
+  .hf-goal { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 8 6; }
+  .hf-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center; font-size: 16px; color: var(--muted); }
+  .hf-legend i { display: inline-block; width: 14px; height: 4px; margin-right: 6px; vertical-align: middle; }
+  .hf-legend .hf-legend-goal { background: repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 7px); }
+  .hf-legend .hf-legend-band { height: 10px; background: var(--gold); opacity: 0.25; }
+
+  .hf-mc { display: flex; gap: 14px; align-items: center; padding: 12px; background: var(--input-bg); box-shadow: 0 0 0 2px var(--border-soft); font-size: 19px; color: var(--ink); line-height: 1.2; }
+  .hf-mc small { display: block; margin-top: 4px; font-size: 16px; color: var(--faint); }
+  .hf-mc-big { font-family: 'Press Start 2P', monospace; font-size: 20px; flex: 0 0 auto; }
+  .hf-need { font-size: 19px; color: var(--muted); text-align: center; line-height: 1.3; }
+  .hf-need b { color: var(--gold); font-weight: normal; }
+  .hf-footnote { margin: 16px 0 0; font-size: 15px; color: var(--faint); text-align: center; }
+
+  @media (max-width: 560px) {
+    .hf-scenarios { grid-template-columns: 1fr; }
+    .hf-assume { grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .hf-mc { flex-direction: column; text-align: center; }
+  }
